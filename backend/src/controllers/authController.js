@@ -107,6 +107,39 @@ exports.logout = async (req, res, next) => {
   }
 };
 
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { current_password, new_password } = req.body;
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: 'Senha atual e nova senha são obrigatórias' });
+    }
+    if (new_password.length < 8) {
+      return res.status(400).json({ error: 'A nova senha deve ter pelo menos 8 caracteres' });
+    }
+
+    const { rows } = await pool.query(
+      'SELECT id, password_hash FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    if (!rows[0]) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+    const valid = await bcrypt.compare(current_password, rows[0].password_hash);
+    if (!valid) return res.status(401).json({ error: 'Senha atual incorreta' });
+
+    const newHash = await bcrypt.hash(new_password, 12);
+    await pool.query(
+      'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+      [newHash, req.user.id]
+    );
+
+    await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
+
+    res.json({ message: 'Senha alterada com sucesso' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.me = async (req, res, next) => {
   try {
     const { rows } = await pool.query(

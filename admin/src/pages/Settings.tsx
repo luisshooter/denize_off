@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent } from 'react';
-import { Save, Store, MessageCircle, Image, Link } from 'lucide-react';
+import { Save, Store, MessageCircle, Image, Link, KeyRound, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 
 interface ConfigForm {
@@ -13,10 +13,18 @@ interface ConfigForm {
   address: string;
 }
 
+interface PasswordForm {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 const empty: ConfigForm = {
   store_name: '', whatsapp_number: '', default_message: '',
   logo_url: '', banner_url: '', instagram_url: '', facebook_url: '', address: ''
 };
+
+const emptyPwd: PasswordForm = { current_password: '', new_password: '', confirm_password: '' };
 
 export default function Settings() {
   const [form, setForm] = useState<ConfigForm>(empty);
@@ -24,6 +32,13 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  const [pwdForm, setPwdForm] = useState<PasswordForm>(emptyPwd);
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdSuccess, setPwdSuccess] = useState(false);
+  const [pwdError, setPwdError] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
 
   useEffect(() => {
     api.get('/config/admin').then(({ data }) => {
@@ -41,6 +56,7 @@ export default function Settings() {
   }, []);
 
   const f = (k: keyof ConfigForm, v: string) => setForm(prev => ({ ...prev, [k]: v }));
+  const p = (k: keyof PasswordForm, v: string) => setPwdForm(prev => ({ ...prev, [k]: v }));
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -61,6 +77,35 @@ export default function Settings() {
       setError(err.response?.data?.error || 'Erro ao salvar configurações');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: FormEvent) => {
+    e.preventDefault();
+    setPwdError(''); setPwdSuccess(false);
+
+    if (pwdForm.new_password.length < 8) {
+      setPwdError('A nova senha deve ter pelo menos 8 caracteres');
+      return;
+    }
+    if (pwdForm.new_password !== pwdForm.confirm_password) {
+      setPwdError('As senhas não coincidem');
+      return;
+    }
+
+    setPwdSaving(true);
+    try {
+      await api.put('/auth/change-password', {
+        current_password: pwdForm.current_password,
+        new_password: pwdForm.new_password
+      });
+      setPwdSuccess(true);
+      setPwdForm(emptyPwd);
+      setTimeout(() => setPwdSuccess(false), 3000);
+    } catch (err: any) {
+      setPwdError(err.response?.data?.error || 'Erro ao trocar senha');
+    } finally {
+      setPwdSaving(false);
     }
   };
 
@@ -141,6 +186,9 @@ export default function Settings() {
           <div>
             <label className="block text-sm font-medium text-brand-dark mb-1.5">URL do Logo</label>
             <input value={form.logo_url} onChange={e => f('logo_url', e.target.value)} className="input" placeholder="https://..." />
+            {form.logo_url && (
+              <img src={form.logo_url} alt="Preview logo" className="mt-2 h-12 object-contain rounded-lg border border-gray-100" />
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-brand-dark mb-1.5">URL do Banner Principal</label>
@@ -164,12 +212,86 @@ export default function Settings() {
         </div>
 
         <button type="submit" className="btn-primary w-full" disabled={saving}>
-          {saving ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <><Save size={18} /> Salvar Configurações</>
-          )}
+          {saving
+            ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : <><Save size={18} /> Salvar Configurações</>
+          }
         </button>
+      </form>
+
+      {/* Troca de senha */}
+      <form onSubmit={handlePasswordChange} className="space-y-5">
+        <div className="card space-y-4">
+          <div className="flex items-center gap-2 mb-1">
+            <KeyRound size={18} className="text-brand-rose" />
+            <h3 className="font-semibold text-brand-dark">Alterar Senha</h3>
+          </div>
+
+          {pwdSuccess && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-medium">
+              ✓ Senha alterada com sucesso!
+            </div>
+          )}
+          {pwdError && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">{pwdError}</div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-brand-dark mb-1.5">Senha Atual</label>
+            <div className="relative">
+              <input
+                type={showCurrent ? 'text' : 'password'}
+                value={pwdForm.current_password}
+                onChange={e => p('current_password', e.target.value)}
+                className="input pr-10"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" onClick={() => setShowCurrent(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-brand-dark mb-1.5">Nova Senha</label>
+            <div className="relative">
+              <input
+                type={showNew ? 'text' : 'password'}
+                value={pwdForm.new_password}
+                onChange={e => p('new_password', e.target.value)}
+                className="input pr-10"
+                placeholder="Mínimo 8 caracteres"
+                required
+                minLength={8}
+              />
+              <button type="button" onClick={() => setShowNew(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-brand-dark mb-1.5">Confirmar Nova Senha</label>
+            <input
+              type="password"
+              value={pwdForm.confirm_password}
+              onChange={e => p('confirm_password', e.target.value)}
+              className="input"
+              placeholder="Repita a nova senha"
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn-primary w-full" disabled={pwdSaving}>
+            {pwdSaving
+              ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              : <><KeyRound size={18} /> Alterar Senha</>
+            }
+          </button>
+        </div>
       </form>
     </div>
   );
