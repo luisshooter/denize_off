@@ -1,0 +1,46 @@
+# Dependências
+node_modules/
+*/node_modules/
+
+# Variáveis de ambiente — NUNCA commitar
+.env
+.env.local
+.env.*.local
+backend/.env
+admin/.env.local
+store/.env.local
+
+# Build
+dist/
+build/
+*/dist/
+*/build/
+
+# Logs
+*.log
+npm-debug.log*
+/tmp/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Pasta interna do Claude Code
+.claude/
+
+# Arquivos soltos na raiz (não fazem parte do projeto)
+db.js
+server.js
+schema.sql
+setup-db.js
+test-api.js
+package.json
+package-lock.json
+
+# Docker (apenas para dev local)
+docker-compose.yml
+
+# Scripts de dev local
+start-dev.bat
+stop-dev.bat
