@@ -30,13 +30,13 @@ desktop.ini
 .claude/
 
 # Arquivos soltos na raiz (não fazem parte do projeto)
-db.js
-server.js
-schema.sql
-setup-db.js
-test-api.js
-package.json
-package-lock.json
+/db.js
+/server.js
+/schema.sql
+/setup-db.js
+/test-api.js
+/package.json
+/package-lock.json
 
 # Docker (apenas para dev local)
 docker-compose.yml
