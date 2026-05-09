@@ -1,0 +1,7 @@
+-----------------------
+anotação da próxima implementação 
+--------------------------
+Certo, para que não precise rodar este mbackend e migrate toda vez quero que faça um botão que exige login e senha para ser rodado que 
+realiza este processo automaticamente coloque um nome intuitivo Leia Mente/Projetos/Denize_off/API/00 - Mapa da API.md                                 
+Lembre-se de sempre alterar no obsidian , linkando as anotações corretas e
+ jogando para la usando o maximo de plugins e sempre lembrando de otimizar os tokens por requisição,faça sempre se precisar adicionar, respeitando a arquiitetura das anotações já escritas 

@@ -24,39 +24,41 @@ exports.getAll = async (req, res, next) => {
       conditions.push(`category = $${params.length}`);
     }
 
+    if (req.query.brand) {
+      params.push(req.query.brand);
+      conditions.push(`brand = $${params.length}`);
+    }
+
     if (req.query.q) {
       params.push(`%${req.query.q.slice(0, 100)}%`);
-      conditions.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length})`);
+      conditions.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length} OR brand ILIKE $${params.length})`);
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     const sort = VALID_SORT[req.query.sort] ? req.query.sort : 'created_at';
     const dir = req.query.dir === 'asc' ? 'ASC' : 'DESC';
 
-    const countParams = [...params];
     params.push(limit, offset);
 
     const { rows } = await pool.query(
-      `SELECT id, name, description, category, price_normal, price_promotion,
-              image_url, stock, status, created_at
+      `SELECT id, name, description, category, brand, price_normal, price_promotion,
+              image_url, stock, status, payment_method_ids, created_at,
+              COUNT(*) OVER() AS total_count
        FROM products ${where}
        ORDER BY ${sort} ${dir}
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params
     );
 
-    const { rows: countRows } = await pool.query(
-      `SELECT COUNT(*) FROM products ${where}`,
-      countParams
-    );
+    const total = parseInt(rows[0]?.total_count ?? '0');
 
     res.json({
-      products: rows,
+      products: rows.map(({ total_count, ...p }) => p),
       pagination: {
-        total: parseInt(countRows[0].count),
+        total,
         page,
         limit,
-        pages: Math.ceil(parseInt(countRows[0].count) / limit)
+        pages: Math.ceil(total / limit)
       }
     });
   } catch (err) {
@@ -67,8 +69,8 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const { rows } = await pool.query(
-      `SELECT id, name, description, category, price_normal, price_promotion,
-              image_url, stock, status, created_at
+      `SELECT id, name, description, category, brand, price_normal, price_promotion,
+              image_url, stock, status, payment_method_ids, created_at
        FROM products WHERE id = $1`,
       [req.params.id]
     );
@@ -85,12 +87,13 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const { name, description, category, price_normal, price_promotion, image_url, stock, status } = req.body;
+    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids } = req.body;
     const { rows } = await pool.query(
-      `INSERT INTO products (name, description, category, price_normal, price_promotion, image_url, stock, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, description, category, price_normal, price_promotion, image_url, stock, status, created_at`,
-      [name, description || null, category, price_normal, price_promotion || null, image_url || null, stock, status || 'active']
+      `INSERT INTO products (name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids, created_at`,
+      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status || 'active',
+       payment_method_ids?.length ? JSON.stringify(payment_method_ids) : null]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -100,15 +103,17 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const { name, description, category, price_normal, price_promotion, image_url, stock, status } = req.body;
+    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids } = req.body;
     const { rows } = await pool.query(
       `UPDATE products SET
-         name = $1, description = $2, category = $3,
-         price_normal = $4, price_promotion = $5, image_url = $6,
-         stock = $7, status = $8, updated_at = NOW()
-       WHERE id = $9
-       RETURNING id, name, description, category, price_normal, price_promotion, image_url, stock, status, updated_at`,
-      [name, description || null, category, price_normal, price_promotion || null, image_url || null, stock, status, req.params.id]
+         name = $1, description = $2, category = $3, brand = $4,
+         price_normal = $5, price_promotion = $6, image_url = $7,
+         stock = $8, status = $9, payment_method_ids = $10, updated_at = NOW()
+       WHERE id = $11
+       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids, updated_at`,
+      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status,
+       payment_method_ids?.length ? JSON.stringify(payment_method_ids) : null,
+       req.params.id]
     );
     if (!rows[0]) return res.status(404).json({ error: 'Produto não encontrado' });
     res.json(rows[0]);

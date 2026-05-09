@@ -29,9 +29,10 @@ const schemas = {
     category: Joi.string().valid(...CATEGORIES).required(),
     price_normal: Joi.number().positive().precision(2).required(),
     price_promotion: Joi.number().positive().precision(2).allow(null).optional(),
-    image_url: Joi.string().uri().max(500).allow('', null).optional(),
+    image_url: Joi.string().max(2000000).allow('', null).optional(),
     stock: Joi.number().integer().min(0).max(99999).required(),
-    status: Joi.string().valid('active', 'inactive').default('active')
+    status: Joi.string().valid('active', 'inactive').default('active'),
+    payment_method_ids: Joi.array().items(Joi.string().max(50)).allow(null).optional()
   }),
 
   order: Joi.object({
@@ -53,11 +54,23 @@ const schemas = {
     store_name: Joi.string().min(2).max(255).optional(),
     whatsapp_number: Joi.string().pattern(/^\d{10,15}$/).allow('', null).optional(),
     default_message: Joi.string().max(500).allow('', null).optional(),
-    logo_url: Joi.string().uri().max(500).allow('', null).optional(),
-    banner_url: Joi.string().uri().max(500).allow('', null).optional(),
+    logo_url: Joi.string().max(2000000).allow('', null).optional(),
+    banner_url: Joi.string().max(2000000).allow('', null).optional(),
     instagram_url: Joi.string().uri().max(500).allow('', null).optional(),
     facebook_url: Joi.string().uri().max(500).allow('', null).optional(),
-    address: Joi.string().max(500).allow('', null).optional()
+    address: Joi.string().max(500).allow('', null).optional(),
+    whatsapp_template_single: Joi.string().max(2000).allow('', null).optional(),
+    whatsapp_template_multiple: Joi.string().max(2000).allow('', null).optional(),
+    payment_methods: Joi.array().items(
+      Joi.object({
+        id: Joi.string().max(50).required(),
+        type: Joi.string().valid('pix', 'credit_card', 'debit_card', 'cash', 'other').required(),
+        label: Joi.string().max(100).required(),
+        enabled: Joi.boolean().default(true),
+        installments: Joi.number().integer().min(1).max(48).optional(),
+        min_installment: Joi.number().positive().precision(2).optional()
+      })
+    ).optional()
   })
 };
 

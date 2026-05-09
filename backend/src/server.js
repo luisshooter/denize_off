@@ -24,9 +24,12 @@ app.use(helmet({
 app.use(compression());
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',').map(s => s.trim());
+const isDev = process.env.NODE_ENV !== 'production';
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin) return callback(null, true);
+    if (isDev && /^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('CORS: origem não permitida'));
   },
   credentials: true,
@@ -42,8 +45,8 @@ app.use(rateLimit({
   message: { error: 'Muitas requisições, tente novamente em breve' }
 }));
 
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: false, limit: '5mb' }));
 
 app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 app.use('/api', routes);

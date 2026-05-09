@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Plus, Search, Pencil, Trash2, X, ImageOff, Package } from 'lucide-react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { Plus, Search, Pencil, Trash2, X, ImageOff, Package, Upload } from 'lucide-react';
 import api from '../services/api';
+import { PaymentIcon, type PaymentMethod } from './settings/PaymentsTab';
 
 interface Product {
   id: string;
@@ -12,6 +13,7 @@ interface Product {
   image_url: string | null;
   stock: number;
   status: 'active' | 'inactive';
+  payment_method_ids: string[] | null;
 }
 
 const CATEGORIES = ['maquiagem', 'skincare', 'cabelo', 'corpo', 'perfumes', 'unhas', 'outros'];
@@ -21,12 +23,13 @@ interface ProductForm {
   name: string; description: string; category: string;
   price_normal: string; price_promotion: string; image_url: string;
   stock: string; status: 'active' | 'inactive';
+  payment_method_ids: string[];
 }
 
 const emptyForm: ProductForm = {
   name: '', description: '', category: 'maquiagem',
   price_normal: '', price_promotion: '', image_url: '',
-  stock: '0', status: 'active'
+  stock: '0', status: 'active', payment_method_ids: []
 };
 
 export default function Products() {
@@ -39,6 +42,24 @@ export default function Products() {
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [storePayments, setStorePayments] = useState<PaymentMethod[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    api.get('/config').then(r => {
+      setStorePayments(Array.isArray(r.data.payment_methods) ? r.data.payment_methods.filter((m: PaymentMethod) => m.enabled) : []);
+    }).catch(() => {});
+  }, []);
+
+  const handleImageFile = (file: File) => {
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Imagem muito grande. Máximo 2MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => f('image_url', e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -60,7 +81,8 @@ export default function Products() {
     setForm({
       name: p.name, description: p.description || '', category: p.category,
       price_normal: String(p.price_normal), price_promotion: String(p.price_promotion || ''),
-      image_url: p.image_url || '', stock: String(p.stock), status: p.status
+      image_url: p.image_url || '', stock: String(p.stock), status: p.status,
+      payment_method_ids: p.payment_method_ids || []
     });
     setEditing(p); setModal('edit'); setError('');
   };
@@ -74,7 +96,8 @@ export default function Products() {
         price_promotion: form.price_promotion ? parseFloat(form.price_promotion) : null,
         stock: parseInt(form.stock),
         image_url: form.image_url || null,
-        description: form.description || null
+        description: form.description || null,
+        payment_method_ids: form.payment_method_ids.length ? form.payment_method_ids : null
       };
       if (modal === 'edit' && editing) {
         await api.put(`/products/${editing.id}`, body);
@@ -274,9 +297,85 @@ export default function Products() {
                     <input type="number" min="0" value={form.stock} onChange={e => f('stock', e.target.value)} className="input" placeholder="0" />
                   </div>
                 </div>
+                {storePayments.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-1.5">
+                      Formas de Pagamento
+                      <span className="text-gray-400 font-normal ml-2 text-xs">Deixe vazio para aceitar todas</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {storePayments.map(m => {
+                        const selected = form.payment_method_ids.includes(m.id);
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => {
+                              const ids = form.payment_method_ids.includes(m.id)
+                                ? form.payment_method_ids.filter(id => id !== m.id)
+                                : [...form.payment_method_ids, m.id];
+                              f('payment_method_ids', ids as any);
+                            }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
+                              selected
+                                ? 'bg-brand-rose text-white border-brand-rose'
+                                : 'bg-white text-gray-500 border-gray-200 hover:border-brand-rose'
+                            }`}
+                          >
+                            <PaymentIcon type={m.type} size={13} />
+                            {m.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {form.payment_method_ids.length === 0 && (
+                      <p className="text-xs text-gray-400 mt-1">Aceitando todos os métodos da loja</p>
+                    )}
+                  </div>
+                )}
                 <div>
-                  <label className="block text-sm font-medium text-brand-dark mb-1.5">URL da Imagem</label>
-                  <input value={form.image_url} onChange={e => f('image_url', e.target.value)} className="input" placeholder="https://..." />
+                  <label className="block text-sm font-medium text-brand-dark mb-1.5">Imagem do Produto</label>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        value={form.image_url.startsWith('data:') ? '' : form.image_url}
+                        onChange={e => f('image_url', e.target.value)}
+                        className="input flex-1"
+                        placeholder="Cole uma URL (https://...)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="btn-secondary px-3 flex-shrink-0 flex items-center gap-1.5"
+                      >
+                        <Upload size={15} /> Upload
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => e.target.files?.[0] && handleImageFile(e.target.files[0])}
+                      />
+                    </div>
+                    {form.image_url && (
+                      <div className="relative inline-block">
+                        <img
+                          src={form.image_url}
+                          alt="Preview"
+                          className="h-24 rounded-xl object-cover border border-gray-200"
+                          onError={() => f('image_url', '')}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => f('image_url', '')}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
