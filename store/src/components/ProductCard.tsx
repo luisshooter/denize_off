@@ -4,6 +4,22 @@ import { useCart } from '../context/CartContext';
 import { useStoreConfig, installmentLabel, type PaymentMethod } from '../context/StoreConfigContext';
 import api from '../services/api';
 
+const BRAND_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
+  Natura:  { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+  Avon:    { bg: 'bg-pink-50',    text: 'text-pink-700',    dot: 'bg-pink-500'    },
+  Farmasi: { bg: 'bg-purple-50',  text: 'text-purple-700',  dot: 'bg-purple-500'  },
+};
+
+function BrandBadge({ brand }: { brand: string }) {
+  const s = BRAND_STYLES[brand] ?? { bg: 'bg-gray-50', text: 'text-gray-500', dot: 'bg-gray-400' };
+  return (
+    <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${s.dot}`} />
+      {brand}
+    </span>
+  );
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -117,15 +133,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Info */}
       <div className="p-3.5 flex flex-col gap-1.5">
-        {product.brand && (
-          <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-widest leading-none">
-            {product.brand}
-          </p>
-        )}
-
-        <span className="text-[10px] font-medium text-brand-rose capitalize bg-brand-rose-light px-2 py-0.5 rounded-full self-start">
-          {product.category}
-        </span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {product.brand && <BrandBadge brand={product.brand} />}
+          <span className="text-[10px] font-medium text-brand-rose capitalize bg-brand-rose-light px-2 py-0.5 rounded-full">
+            {product.category}
+          </span>
+        </div>
 
         <h3 className="font-medium text-brand-dark text-sm leading-snug line-clamp-2">
           {product.name}

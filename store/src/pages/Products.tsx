@@ -41,6 +41,7 @@ export default function Products() {
   const category = searchParams.get('category') || '';
   const brand    = searchParams.get('brand') || '';
   const sort     = searchParams.get('sort') || 'created_at:desc';
+  const promo    = searchParams.get('promo') === 'true';
 
   /* Fetch unique brands once on mount */
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function Products() {
       if (search)   params.set('q', search);
       if (category) params.set('category', category);
       if (brand)    params.set('brand', brand);
+      if (promo)    params.set('promo', 'true');
       const { data } = await api.get(`/products?${params}`);
       setProducts(p === 1 ? data.products : prev => [...prev, ...data.products]);
       setTotal(data.pagination.total);
@@ -67,7 +69,7 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, brand, sort]);
+  }, [search, category, brand, sort, promo]);
 
   useEffect(() => { fetchProducts(1); }, [fetchProducts]);
 
@@ -79,17 +81,45 @@ export default function Products() {
     });
   };
 
-  const hasFilters = search || category || brand;
+  const hasFilters = search || category || brand || promo;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-brand-dark">Produtos</h1>
-        <p className="text-brand-muted mt-1 text-sm">
-          {loading ? 'Carregando...' : `${total} produto${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`}
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-brand-dark">
+            {promo ? 'Em Promoção' : 'Produtos'}
+          </h1>
+          <p className="text-brand-muted mt-1 text-sm">
+            {loading ? 'Carregando...' : `${total} produto${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`}
+          </p>
+        </div>
+
+        {/* Mode tabs */}
+        <div className="flex gap-2 flex-shrink-0">
+          <button
+            onClick={() => set('promo', '')}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all select-none ${
+              !promo
+                ? 'bg-brand-dark text-white shadow-sm'
+                : 'bg-white border border-brand-sand text-brand-muted hover:text-brand-dark'
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => set('promo', 'true')}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 select-none ${
+              promo
+                ? 'bg-brand-rose text-white shadow-rose'
+                : 'bg-white border border-brand-sand text-brand-muted hover:border-brand-rose hover:text-brand-rose'
+            }`}
+          >
+            <Tag size={13} /> Em Promoção
+          </button>
+        </div>
       </div>
 
       {/* Filter panel */}
