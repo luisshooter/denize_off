@@ -29,6 +29,10 @@ exports.getAll = async (req, res, next) => {
       conditions.push(`brand = $${params.length}`);
     }
 
+    if (req.query.promo === 'true') {
+      conditions.push(`price_promotion IS NOT NULL`);
+    }
+
     if (req.query.q) {
       params.push(`%${req.query.q.slice(0, 100)}%`);
       conditions.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length} OR brand ILIKE $${params.length})`);

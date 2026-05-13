@@ -1,11 +1,12 @@
 const pool = require('../config/db');
 
 exports.create = async (req, res, next) => {
+  const client = await pool.connect();
   try {
     const { customer_name, customer_phone, items } = req.body;
 
     const productIds = [...new Set(items.map(i => i.product_id))];
-    const { rows: products } = await pool.query(
+    const { rows: products } = await client.query(
       `SELECT id, name, price_normal, price_promotion, stock, status
        FROM products WHERE id = ANY($1::uuid[])`,
       [productIds]
@@ -17,30 +18,41 @@ exports.create = async (req, res, next) => {
 
     for (const item of items) {
       const product = productMap.get(item.product_id);
-      if (!product) {
-        return res.status(400).json({ error: `Produto não encontrado` });
-      }
-      if (product.status !== 'active') {
+      if (!product)
+        return res.status(400).json({ error: 'Produto não encontrado' });
+      if (product.status !== 'active')
         return res.status(400).json({ error: `Produto indisponível: ${product.name}` });
-      }
-      if (product.stock < item.quantity) {
+      if (product.stock < item.quantity)
         return res.status(400).json({ error: `Estoque insuficiente: ${product.name}` });
-      }
+
       const price = parseFloat(product.price_promotion || product.price_normal);
       enrichedItems.push({ product_id: item.product_id, name: product.name, price, quantity: item.quantity });
       total += price * item.quantity;
     }
 
-    const { rows } = await pool.query(
+    await client.query('BEGIN');
+
+    const { rows } = await client.query(
       `INSERT INTO orders (customer_name, customer_phone, items, total)
        VALUES ($1, $2, $3, $4)
        RETURNING id, customer_name, customer_phone, items, total, status, created_at`,
       [customer_name, customer_phone, JSON.stringify(enrichedItems), parseFloat(total.toFixed(2))]
     );
 
+    for (const item of enrichedItems) {
+      await client.query(
+        `UPDATE products SET stock = GREATEST(0, stock - $1), updated_at = NOW() WHERE id = $2`,
+        [item.quantity, item.product_id]
+      );
+    }
+
+    await client.query('COMMIT');
     res.status(201).json(rows[0]);
   } catch (err) {
+    try { await client.query('ROLLBACK'); } catch (_) {}
     next(err);
+  } finally {
+    client.release();
   }
 };
 
@@ -60,29 +72,26 @@ exports.getAll = async (req, res, next) => {
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countParams = [...params];
     params.push(limit, offset);
 
     const { rows } = await pool.query(
-      `SELECT id, customer_name, customer_phone, items, total, status, notes, created_at
+      `SELECT id, customer_name, customer_phone, items, total, status, notes, created_at,
+              COUNT(*) OVER() AS total_count
        FROM orders ${where}
        ORDER BY created_at DESC
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params
     );
 
-    const { rows: countRows } = await pool.query(
-      `SELECT COUNT(*) FROM orders ${where}`,
-      countParams
-    );
+    const total = parseInt(rows[0]?.total_count ?? '0');
 
     res.json({
-      orders: rows,
+      orders: rows.map(({ total_count, ...o }) => o),
       pagination: {
-        total: parseInt(countRows[0].count),
+        total,
         page,
         limit,
-        pages: Math.ceil(parseInt(countRows[0].count) / limit)
+        pages: Math.ceil(total / limit)
       }
     });
   } catch (err) {
