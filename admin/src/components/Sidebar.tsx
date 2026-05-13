@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, Settings, X, Sparkles, Flower2 } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Settings, X, Sparkles, Flower2, BarChart3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 
 const navItems = [
   { to: '/dashboard',    label: 'Dashboard',     icon: LayoutDashboard },
   { to: '/produtos',     label: 'Produtos',       icon: Package },
+  { to: '/estoque',      label: 'Estoque',        icon: BarChart3 },
   { to: '/pedidos',      label: 'Pedidos',        icon: ShoppingBag },
   { to: '/configuracoes',label: 'Configurações',  icon: Settings },
 ];
