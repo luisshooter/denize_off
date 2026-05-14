@@ -37,7 +37,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = (v: number | string) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function PaymentBadge({ method, price }: { method: PaymentMethod; price: number }) {
   const label = installmentLabel(method, price);

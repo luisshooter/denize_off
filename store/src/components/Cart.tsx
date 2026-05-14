@@ -9,7 +9,7 @@ interface CartProps {
   onClose: () => void;
 }
 
-const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = (v: number | string) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function applyTemplate(template: string, vars: Record<string, string>): string {
   return Object.entries(vars).reduce(
