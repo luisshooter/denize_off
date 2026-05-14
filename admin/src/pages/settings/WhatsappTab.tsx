@@ -13,8 +13,8 @@ interface Props {
   initial: WhatsappForm;
 }
 
-const DEFAULT_SINGLE = `Olá! 👋 Gostaria de fazer um pedido:\n\n🛍️ *{produto}*\n{quantidade} unid. × {preco_unitario} = {subtotal}\n\n💰 *TOTAL: {total}*\n\n👤 Nome: {nome}`;
-const DEFAULT_MULTIPLE = `Olá! 👋 Gostaria de fazer um pedido:\n\n{lista}\n\n💰 *TOTAL: {total}*\n\n👤 Nome: {nome}`;
+const DEFAULT_SINGLE = `🌸 *Olá! Aqui é {nome}* 😊\n\nVim pelo site e gostaria de encomendar:\n\n✨ *{produto}*\n📦 Quantidade: {quantidade} unidade(s)\n💵 Valor unitário: {preco_unitario}\n\n💰 *Total: {total}*\n\nPode me confirmar a disponibilidade? 🙏💕`;
+const DEFAULT_MULTIPLE = `🌸 *Olá! Aqui é {nome}* 😊\n\nVim pelo site e gostaria de encomendar:\n\n{lista}\n\n💰 *Total: {total}*\n\nPode me confirmar a disponibilidade? 🙏💕`;
 
 const TAGS_SINGLE = [
   { tag: '{produto}', desc: 'Nome do produto' },
@@ -224,7 +224,7 @@ export default function WhatsappTab({ initial }: Props) {
           <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>Prévia (com dados de exemplo):</p>
           <pre className="text-xs whitespace-pre-wrap font-sans leading-relaxed" style={{ color: 'var(--text-primary)' }}>
             {form.whatsapp_template_multiple
-              .replace('{lista}', '🛍️ *Batom Rosa Intenso*\n2 unid. × R$ 24,90 = R$ 49,80\n\n🛍️ *Hidratante Corporal*\n1 unid. × R$ 35,00 = R$ 35,00')
+              .replace('{lista}', '✨ *Batom Rosa Intenso*\n📦 2 und. × R$ 24,90 = R$ 49,80\n\n✨ *Hidratante Corporal*\n📦 1 und. × R$ 35,00 = R$ 35,00')
               .replace('{total}', 'R$ 84,80')
               .replace('{nome}', 'Maria')
             }

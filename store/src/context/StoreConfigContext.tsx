@@ -18,8 +18,8 @@ export interface StoreConfig {
   whatsapp_template_multiple: string;
 }
 
-const DEFAULT_SINGLE = `Olá! 👋 Gostaria de fazer um pedido:\n\n🛍️ *{produto}*\n{quantidade} unid. × {preco_unitario} = {subtotal}\n\n💰 *TOTAL: {total}*\n\n👤 Nome: {nome}`;
-const DEFAULT_MULTIPLE = `Olá! 👋 Gostaria de fazer um pedido:\n\n{lista}\n\n💰 *TOTAL: {total}*\n\n👤 Nome: {nome}`;
+const DEFAULT_SINGLE = `🌸 *Olá! Aqui é {nome}* 😊\n\nVim pelo site e gostaria de encomendar:\n\n✨ *{produto}*\n📦 Quantidade: {quantidade} unidade(s)\n💵 Valor unitário: {preco_unitario}\n\n💰 *Total: {total}*\n\nPode me confirmar a disponibilidade? 🙏💕`;
+const DEFAULT_MULTIPLE = `🌸 *Olá! Aqui é {nome}* 😊\n\nVim pelo site e gostaria de encomendar:\n\n{lista}\n\n💰 *Total: {total}*\n\nPode me confirmar a disponibilidade? 🙏💕`;
 
 const defaultConfig: StoreConfig = {
   store_name: '',

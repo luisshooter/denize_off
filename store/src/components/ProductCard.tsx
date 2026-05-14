@@ -84,7 +84,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleCallNow = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const msg = `Olá! 👋 Gostaria de informações sobre:\n*${product.name}* — ${fmt(price)}`;
+      const msg = `🌸 Olá! Tenho interesse em:\n\n✨ *${product.name}*\n💰 ${fmt(price)}\n\nPode me ajudar? 😊`;
       const { data } = await api.get(`/config/whatsapp-link?message=${encodeURIComponent(msg)}`);
       window.open(data.link, '_blank', 'noopener,noreferrer');
     } catch {

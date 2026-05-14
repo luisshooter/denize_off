@@ -45,7 +45,7 @@ export default function Cart({ open, onClose }: CartProps) {
       });
     }
     const lista = items
-      .map(i => `🛍️ *${i.name}*\n${i.quantity} unid. × ${fmt(i.price)} = ${fmt(i.price * i.quantity)}`)
+      .map(i => `✨ *${i.name}*\n📦 ${i.quantity} und. × ${fmt(i.price)} = ${fmt(i.price * i.quantity)}`)
       .join('\n\n');
     return applyTemplate(config.whatsapp_template_multiple, { lista, total: fmt(total), nome: customerName });
   };
