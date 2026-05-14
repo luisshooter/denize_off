@@ -18,56 +18,84 @@ function applyTemplate(template: string, vars: Record<string, string>): string {
   );
 }
 
+function FieldError({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">⚠ {msg}</p>;
+}
+
 export default function Cart({ open, onClose }: CartProps) {
   const { items, count, total, removeItem, updateQty, clear } = useCart();
   const config = useStoreConfig();
-  const [step, setStep] = useState<'cart' | 'checkout'>('cart');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
+  const [step, setStep]           = useState<'cart' | 'checkout'>('cart');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName]   = useState('');
+  const [phone, setPhone]         = useState('');
+  const [sending, setSending]     = useState(false);
+  const [apiError, setApiError]   = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearField = (k: string) =>
+    setFieldErrors(prev => ({ ...prev, [k]: '' }));
 
   const handleClose = () => {
     onClose();
-    setTimeout(() => { setStep('cart'); setError(''); }, 300);
+    setTimeout(() => { setStep('cart'); setApiError(''); setFieldErrors({}); }, 300);
   };
 
-  const buildMessage = (customerName: string): string => {
+  const goBack = () => { setStep('cart'); setApiError(''); setFieldErrors({}); };
+
+  const buildMessage = (fullName: string): string => {
     if (items.length === 1) {
       const item = items[0];
       return applyTemplate(config.whatsapp_template_single, {
-        produto: item.name,
-        quantidade: String(item.quantity),
+        produto:        item.name,
+        quantidade:     String(item.quantity),
         preco_unitario: fmt(item.price),
-        subtotal: fmt(item.price * item.quantity),
-        total: fmt(total),
-        nome: customerName,
+        subtotal:       fmt(item.price * item.quantity),
+        total:          fmt(total),
+        nome:           fullName,
       });
     }
     const lista = items
       .map(i => `✨ *${i.name}*\n📦 ${i.quantity} und. × ${fmt(i.price)} = ${fmt(i.price * i.quantity)}`)
       .join('\n\n');
-    return applyTemplate(config.whatsapp_template_multiple, { lista, total: fmt(total), nome: customerName });
+    return applyTemplate(config.whatsapp_template_multiple, { lista, total: fmt(total), nome: fullName });
+  };
+
+  const validate = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!firstName.trim())
+      errs.firstName = 'Informe seu nome';
+    if (!lastName.trim())
+      errs.lastName = 'Informe seu sobrenome';
+    const digits = phone.replace(/\D/g, '');
+    if (!digits)
+      errs.phone = 'Informe seu número de WhatsApp';
+    else if (digits.length < 10)
+      errs.phone = 'Número inválido — inclua o DDD (ex: 46 9 9999-9999)';
+    return errs;
   };
 
   const handleOrder = async () => {
-    if (!name.trim()) { setError('Informe seu nome'); return; }
-    if (!phone.trim()) { setError('Informe seu WhatsApp'); return; }
-    setError('');
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setFieldErrors(errs); return; }
+    setFieldErrors({});
+    setApiError('');
     setSending(true);
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     try {
       await api.post('/orders', {
-        customer_name: name.trim(),
-        customer_phone: phone.trim().replace(/\D/g, ''),
+        customer_name:  fullName,
+        customer_phone: phone.replace(/\D/g, ''),
         items: items.map(i => ({ product_id: i.id, quantity: i.quantity })),
       });
-      const msg = buildMessage(name.trim());
+      const msg = buildMessage(fullName);
       const { data } = await api.get(`/config/whatsapp-link?message=${encodeURIComponent(msg)}`);
       clear();
       handleClose();
       window.open(data.link, '_blank', 'noopener,noreferrer');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Erro ao enviar pedido. Tente novamente.');
+      setApiError(err.response?.data?.error || 'Erro ao enviar pedido. Tente novamente.');
     } finally {
       setSending(false);
     }
@@ -89,7 +117,7 @@ export default function Cart({ open, onClose }: CartProps) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-brand-sand/50">
           {step === 'checkout' ? (
             <button
-              onClick={() => { setStep('cart'); setError(''); }}
+              onClick={goBack}
               className="flex items-center gap-1.5 text-brand-muted hover:text-brand-dark transition-colors text-sm font-medium"
             >
               <ArrowLeft size={16} /> Voltar
@@ -193,6 +221,7 @@ export default function Cart({ open, onClose }: CartProps) {
           <>
             {/* Checkout form */}
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
+
               {/* Order summary */}
               <div className="bg-brand-cream rounded-2xl p-4 space-y-2">
                 <p className="text-[10px] font-semibold text-brand-muted uppercase tracking-widest mb-3">Resumo do pedido</p>
@@ -208,44 +237,74 @@ export default function Cart({ open, onClose }: CartProps) {
                 </div>
               </div>
 
-              {error && (
+              {apiError && (
                 <div className="bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-xl animate-fade-in">
-                  {error}
+                  {apiError}
                 </div>
               )}
 
               {/* Form fields */}
               <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-semibold text-brand-dark uppercase tracking-widest mb-2 block">
-                    Seu nome
-                  </label>
-                  <div className="relative">
-                    <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      placeholder="Como posso te chamar?"
-                      className="input-field pl-10"
-                    />
+
+                {/* Linha: Nome + Sobrenome */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-semibold text-brand-dark uppercase tracking-widest mb-2 block">
+                      Nome <span className="text-brand-rose">*</span>
+                    </label>
+                    <div className="relative">
+                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={e => { setFirstName(e.target.value); clearField('firstName'); }}
+                        placeholder="Maria"
+                        className={`input-field pl-9 ${fieldErrors.firstName ? 'border-red-400 focus:ring-red-200' : ''}`}
+                      />
+                    </div>
+                    <FieldError msg={fieldErrors.firstName} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-brand-dark uppercase tracking-widest mb-2 block">
+                      Sobrenome <span className="text-brand-rose">*</span>
+                    </label>
+                    <div className="relative">
+                      <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={e => { setLastName(e.target.value); clearField('lastName'); }}
+                        placeholder="Silva"
+                        className={`input-field pl-9 ${fieldErrors.lastName ? 'border-red-400 focus:ring-red-200' : ''}`}
+                      />
+                    </div>
+                    <FieldError msg={fieldErrors.lastName} />
                   </div>
                 </div>
+
+                {/* WhatsApp */}
                 <div>
                   <label className="text-[10px] font-semibold text-brand-dark uppercase tracking-widest mb-2 block">
-                    WhatsApp (com DDD)
+                    WhatsApp com DDD <span className="text-brand-rose">*</span>
                   </label>
                   <div className="relative">
                     <Phone size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
                     <input
                       type="tel"
                       value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                      placeholder="(11) 99999-9999"
-                      className="input-field pl-10"
+                      onChange={e => { setPhone(e.target.value); clearField('phone'); }}
+                      placeholder="(46) 9 9999-9999"
+                      className={`input-field pl-10 ${fieldErrors.phone ? 'border-red-400 focus:ring-red-200' : ''}`}
                     />
                   </div>
+                  <FieldError msg={fieldErrors.phone} />
+                  {!fieldErrors.phone && (
+                    <p className="text-[11px] text-brand-muted mt-1.5">
+                      Usamos para entrar em contato sobre seu pedido
+                    </p>
+                  )}
                 </div>
+
               </div>
             </div>
 
