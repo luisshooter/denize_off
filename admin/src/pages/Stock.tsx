@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Package, RefreshCw, Minus, Plus, Save, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Package, RefreshCw, Minus, Plus, Save, CheckCircle2, AlertTriangle, Archive, Layers } from 'lucide-react';
 import api from '../services/api';
 
 interface Product {
@@ -23,14 +23,17 @@ const BRAND_CFG: Record<string, { label: string; color: string; bg: string; bord
 };
 
 const BRAND_ORDER = ['Natura', 'Avon', 'Farmasi'];
-const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+type Tab = 'all' | 'out';
 
 export default function Stock() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pending, setPending] = useState<Record<string, number>>({});
-  const [saving, setSaving]   = useState<Record<string, boolean>>({});
-  const [saved,  setSaved]    = useState<Record<string, boolean>>({});
+  const [loading, setLoading]   = useState(true);
+  const [pending, setPending]   = useState<Record<string, number>>({});
+  const [saving, setSaving]     = useState<Record<string, boolean>>({});
+  const [saved,  setSaved]      = useState<Record<string, boolean>>({});
+  const [tab,    setTab]        = useState<Tab>('all');
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -91,10 +94,28 @@ export default function Stock() {
     return acc;
   }, {});
 
-  const otherBrands = Object.keys(byBrand).filter(
+  // For out-of-stock tab: only include groups/products with stock = 0
+  const displayByBrand: Record<string, Product[]> = tab === 'out'
+    ? Object.fromEntries(
+        Object.entries(byBrand)
+          .map(([k, ps]) => [k, ps.filter(p => getStock(p) === 0)])
+          .filter(([, ps]) => (ps as Product[]).length > 0)
+      )
+    : byBrand;
+
+  const otherBrands = Object.keys(displayByBrand).filter(
     k => !BRAND_ORDER.includes(k) && k !== '__outros__'
   ).sort();
   const groupOrder = [...BRAND_ORDER, ...otherBrands, '__outros__'];
+
+  // Only show brand summary cards for brands that actually have products
+  const activeSummaryBrands = BRAND_ORDER.filter(b => (byBrand[b]?.length ?? 0) > 0);
+
+  // Global stats
+  const totalProducts  = products.length;
+  const totalInStock   = products.filter(p => getStock(p) > 0).length;
+  const lowStockCount  = products.filter(p => getStock(p) > 0 && getStock(p) <= 5).length;
+  const outStockCount  = products.filter(p => getStock(p) === 0).length;
 
   if (loading) return (
     <div className="flex justify-center items-center py-24">
@@ -103,71 +124,140 @@ export default function Stock() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
             Controle de Estoque
           </h2>
           <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-            Estoque decrementado automaticamente ao confirmar pedido pelo carrinho
+            Estoque decrementado automaticamente ao confirmar pedido
           </p>
         </div>
-        <button onClick={fetchProducts} className="btn-secondary flex items-center gap-2 py-2 px-4 text-sm">
-          <RefreshCw size={15} /> Atualizar
+        <button
+          onClick={fetchProducts}
+          className="btn-secondary flex items-center gap-2 py-2 px-4 text-sm flex-shrink-0"
+        >
+          <RefreshCw size={14} /> Atualizar
         </button>
       </div>
 
-      {/* Brand summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {BRAND_ORDER.map(brand => {
-          const cfg = BRAND_CFG[brand];
-          const ps  = byBrand[brand] || [];
-          const totalUnits = ps.reduce((s, p) => s + getStock(p), 0);
-          const lowStock   = ps.filter(p => getStock(p) > 0 && getStock(p) <= 5).length;
-          const outOfStock = ps.filter(p => getStock(p) === 0).length;
-
-          return (
-            <div key={brand} className="card" style={{ borderLeft: `4px solid ${cfg.border}` }}>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="font-bold text-base" style={{ color: cfg.color }}>{cfg.label}</p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                    {ps.length} produto{ps.length !== 1 ? 's' : ''}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                     style={{ background: cfg.bg }}>
-                  <Package size={20} style={{ color: cfg.color }} />
-                </div>
-              </div>
-              <div className="flex gap-5 text-sm">
-                <div>
-                  <p className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>{totalUnits}</p>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>unidades</p>
-                </div>
-                {lowStock > 0 && (
-                  <div>
-                    <p className="font-bold text-xl text-amber-500">{lowStock}</p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>baixo</p>
-                  </div>
-                )}
-                {outOfStock > 0 && (
-                  <div>
-                    <p className="font-bold text-xl text-red-500">{outOfStock}</p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>esgotado</p>
-                  </div>
-                )}
-              </div>
+      {/* Global stats strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total',      value: totalProducts, color: 'var(--text-primary)', icon: Layers },
+          { label: 'Em estoque', value: totalInStock,  color: '#10B981',             icon: CheckCircle2 },
+          { label: 'Estoque baixo', value: lowStockCount, color: '#F59E0B',          icon: AlertTriangle },
+          { label: 'Sem estoque',   value: outStockCount,  color: '#EF4444',         icon: Archive },
+        ].map(({ label, value, color, icon: Icon }) => (
+          <div key={label} className="card flex items-center gap-3 py-3 px-4">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                 style={{ background: `${color}15` }}>
+              <Icon size={16} style={{ color }} />
             </div>
-          );
-        })}
+            <div>
+              <p className="text-xl font-bold leading-none" style={{ color }}>{value}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* Brand summary cards — only brands that have products */}
+      {activeSummaryBrands.length > 0 && (
+        <div className={`grid grid-cols-1 gap-4 ${
+          activeSummaryBrands.length === 1 ? '' :
+          activeSummaryBrands.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
+        }`}>
+          {activeSummaryBrands.map(brand => {
+            const cfg = BRAND_CFG[brand];
+            const ps  = byBrand[brand] || [];
+            const totalUnits = ps.reduce((s, p) => s + getStock(p), 0);
+            const low  = ps.filter(p => getStock(p) > 0 && getStock(p) <= 5).length;
+            const out  = ps.filter(p => getStock(p) === 0).length;
+
+            return (
+              <div key={brand} className="card" style={{ borderLeft: `4px solid ${cfg.border}` }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="font-bold text-base" style={{ color: cfg.color }}>{cfg.label}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                      {ps.length} produto{ps.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                       style={{ background: cfg.bg }}>
+                    <Package size={20} style={{ color: cfg.color }} />
+                  </div>
+                </div>
+                <div className="flex gap-5 text-sm">
+                  <div>
+                    <p className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>{totalUnits}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>unidades</p>
+                  </div>
+                  {low > 0 && (
+                    <div>
+                      <p className="font-bold text-xl text-amber-500">{low}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>baixo</p>
+                    </div>
+                  )}
+                  {out > 0 && (
+                    <div>
+                      <p className="font-bold text-xl text-red-500">{out}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>esgotado</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 p-1 rounded-xl w-fit"
+           style={{ background: 'var(--input-bg)', border: '1px solid var(--card-border)' }}>
+        <button
+          onClick={() => setTab('all')}
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          style={tab === 'all'
+            ? { background: 'var(--card-bg)', color: 'var(--text-primary)', boxShadow: '0 1px 3px rgba(0,0,0,.12)' }
+            : { color: 'var(--text-muted)' }}
+        >
+          Todos os produtos
+          <span className="ml-1.5 text-xs opacity-60">({totalProducts})</span>
+        </button>
+        <button
+          onClick={() => setTab('out')}
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5"
+          style={tab === 'out'
+            ? { background: 'var(--card-bg)', color: '#EF4444', boxShadow: '0 1px 3px rgba(0,0,0,.12)' }
+            : { color: 'var(--text-muted)' }}
+        >
+          <Archive size={13} />
+          Sem estoque
+          {outStockCount > 0 && (
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+                  style={{ background: tab === 'out' ? 'rgba(239,68,68,.12)' : 'rgba(239,68,68,.1)', color: '#EF4444' }}>
+              {outStockCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Empty state for out-of-stock tab */}
+      {tab === 'out' && outStockCount === 0 && (
+        <div className="card text-center py-14">
+          <CheckCircle2 size={40} className="mx-auto mb-3 text-emerald-500 opacity-60" />
+          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Todos os produtos têm estoque!</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Nenhum produto esgotado no momento</p>
+        </div>
+      )}
+
       {/* Product groups */}
-      {groupOrder.filter(k => (byBrand[k]?.length ?? 0) > 0).map(brandKey => {
+      {groupOrder.filter(k => (displayByBrand[k]?.length ?? 0) > 0).map(brandKey => {
         const cfg = BRAND_CFG[brandKey] ?? {
           label: brandKey === '__outros__' ? 'Sem Marca' : brandKey,
           color: '#64748b',
@@ -175,28 +265,28 @@ export default function Stock() {
           border: '#94a3b8',
           tagline: '',
         };
-        const ps    = byBrand[brandKey];
+        const ps    = displayByBrand[brandKey];
         const label = brandKey === '__outros__' ? 'Sem Marca' : brandKey;
 
         return (
           <div key={brandKey} className="card overflow-hidden" style={{ padding: 0 }}>
             {/* Brand header */}
-            <div className="flex items-center gap-3 px-5 py-4"
-                 style={{ background: cfg.bg, borderBottom: `1px solid ${typeof cfg.border === 'string' && cfg.border.startsWith('var') ? 'var(--card-border)' : `${cfg.border}30`}` }}>
-              <div className="w-1.5 h-8 rounded-full flex-shrink-0" style={{ background: cfg.border }} />
-              <div className="flex-1">
-                <p className="font-bold text-base" style={{ color: cfg.color }}>{label}</p>
+            <div className="flex items-center gap-3 px-5 py-3.5"
+                 style={{ background: cfg.bg, borderBottom: `1px solid ${cfg.border}25` }}>
+              <div className="w-1 h-6 rounded-full flex-shrink-0" style={{ background: cfg.border }} />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm" style={{ color: cfg.color }}>{label}</p>
                 {cfg.tagline && (
-                  <p className="text-xs mt-0.5" style={{ color: cfg.color, opacity: 0.6 }}>{cfg.tagline}</p>
+                  <p className="text-xs mt-0.5 truncate" style={{ color: cfg.color, opacity: 0.55 }}>{cfg.tagline}</p>
                 )}
               </div>
-              <span className="text-xs font-medium px-3 py-1 rounded-full"
-                    style={{ background: `${cfg.border}20`, color: cfg.color }}>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+                    style={{ background: `${cfg.border}18`, color: cfg.color }}>
                 {ps.length} item{ps.length !== 1 ? 's' : ''}
               </span>
             </div>
 
-            {/* Products */}
+            {/* Product rows */}
             <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
               {ps.map(product => {
                 const stock   = getStock(product);
@@ -207,51 +297,65 @@ export default function Stock() {
                 const isOut   = stock === 0;
 
                 return (
-                  <div key={product.id} className="flex items-center gap-4 px-5 py-3.5">
+                  <div key={product.id}
+                       className="flex items-center gap-3 px-5 py-3 transition-colors"
+                       style={{ background: isDirty ? `${cfg.border}06` : undefined }}>
+
                     {/* Thumbnail */}
-                    <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0"
-                         style={{ background: cfg.bg, border: `1px solid ${cfg.border}25` }}>
+                    <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0"
+                         style={{ background: cfg.bg, border: `1px solid ${cfg.border}20` }}>
                       {product.image_url
                         ? <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center">
-                            <Package size={16} style={{ color: cfg.border }} />
+                            <Package size={14} style={{ color: cfg.border }} />
                           </div>
                       }
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                      <p className="text-sm font-medium truncate leading-tight" style={{ color: 'var(--text-primary)' }}>
                         {product.name}
                       </p>
-                      <p className="text-xs capitalize" style={{ color: 'var(--text-muted)' }}>
-                        {product.category} · {fmt(product.price_promotion ?? product.price_normal)}
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <p className="text-xs capitalize" style={{ color: 'var(--text-muted)' }}>
+                          {product.category}
+                        </p>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>·</span>
+                        <p className="text-xs font-medium" style={{ color: cfg.color }}>
+                          {fmt(Number(product.price_promotion ?? product.price_normal))}
+                        </p>
                         {product.status === 'inactive' && (
-                          <span className="ml-1.5 text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">inativo</span>
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                style={{ background: 'rgba(100,116,139,.12)', color: '#64748b' }}>
+                            inativo
+                          </span>
                         )}
-                      </p>
+                      </div>
                     </div>
 
-                    {/* Status dot */}
-                    {(isOut || isLow) && (
-                      <AlertTriangle size={14} className={isOut ? 'text-red-500' : 'text-amber-500'} />
-                    )}
+                    {/* Stock status icon */}
+                    <div className="w-5 flex-shrink-0 flex justify-center">
+                      {(isOut || isLow) && (
+                        <AlertTriangle size={13} className={isOut ? 'text-red-500' : 'text-amber-400'} />
+                      )}
+                    </div>
 
                     {/* Stock adjuster */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => adjust(product.id, stock, -1)}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70"
                         style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
                       >
-                        <Minus size={12} />
+                        <Minus size={11} />
                       </button>
                       <input
                         type="number"
                         min={0}
                         value={stock}
                         onChange={e => setVal(product.id, e.target.value)}
-                        className="input w-16 text-center text-sm font-bold py-1.5"
+                        className="input w-14 text-center text-sm font-bold py-1.5"
                         style={{
                           borderColor: isDirty ? cfg.border : undefined,
                           color: isOut ? '#EF4444' : isLow ? '#F59E0B' : 'var(--text-primary)',
@@ -259,10 +363,10 @@ export default function Stock() {
                       />
                       <button
                         onClick={() => adjust(product.id, stock, 1)}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70"
                         style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
                       >
-                        <Plus size={12} />
+                        <Plus size={11} />
                       </button>
                     </div>
 
@@ -272,9 +376,10 @@ export default function Stock() {
                       disabled={!isDirty || isSav}
                       className="w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0"
                       style={{
-                        background: isSaved ? 'rgba(16,185,129,0.12)' : isDirty ? `${cfg.border}20` : 'transparent',
+                        background: isSaved ? 'rgba(16,185,129,0.12)' : isDirty ? `${cfg.border}22` : 'transparent',
                         color: isSaved ? '#10B981' : isDirty ? cfg.border : 'transparent',
                         cursor: isDirty ? 'pointer' : 'default',
+                        border: isDirty && !isSaved ? `1px solid ${cfg.border}40` : '1px solid transparent',
                       }}
                       title={isDirty ? 'Salvar alteração' : ''}
                     >
@@ -282,8 +387,8 @@ export default function Stock() {
                         ? <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
                                style={{ borderColor: cfg.border, borderTopColor: 'transparent' }} />
                         : isSaved
-                          ? <CheckCircle2 size={16} />
-                          : <Save size={14} />
+                          ? <CheckCircle2 size={15} />
+                          : <Save size={13} />
                       }
                     </button>
                   </div>

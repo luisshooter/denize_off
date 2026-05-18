@@ -14,6 +14,7 @@ exports.getAll = async (req, res, next) => {
 
     if (!isAdmin) {
       conditions.push(`status = 'active'`);
+      conditions.push(`stock > 0`);
     } else if (req.query.status && ['active', 'inactive'].includes(req.query.status)) {
       params.push(req.query.status);
       conditions.push(`status = $${params.length}`);
