@@ -2,9 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X, Tag } from 'lucide-react';
 import ProductCard, { Product } from '../components/ProductCard';
+import PromoBanner from '../components/PromoBanner';
+import { useStoreConfig } from '../context/StoreConfigContext';
 import api from '../services/api';
-
-const CATEGORIES = ['maquiagem', 'skincare', 'cabelo', 'corpo', 'perfumes', 'unhas', 'outros'];
 const SORT_OPTIONS = [
   { value: 'created_at:desc', label: 'Mais recentes' },
   { value: 'price_normal:asc', label: 'Menor preço' },
@@ -30,6 +30,7 @@ function FilterPill({
 }
 
 export default function Products() {
+  const { categories: CATEGORIES } = useStoreConfig();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts]         = useState<Product[]>([]);
   const [total, setTotal]               = useState(0);
@@ -121,6 +122,9 @@ export default function Products() {
           </button>
         </div>
       </div>
+
+      {/* Promo animated banner */}
+      {promo && <PromoBanner />}
 
       {/* Filter panel */}
       <div className="bg-white rounded-2xl border border-brand-sand/60 shadow-card p-4 mb-8 space-y-4">

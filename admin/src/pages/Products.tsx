@@ -17,7 +17,7 @@ interface Product {
   payment_method_ids: string[] | null;
 }
 
-const CATEGORIES = ['maquiagem', 'skincare', 'cabelo', 'corpo', 'perfumes', 'unhas', 'outros'];
+const DEFAULT_CATEGORIES = ['maquiagem', 'skincare', 'cabelo', 'corpo', 'perfumes', 'unhas', 'outros'];
 const BRANDS = ['Natura', 'Avon', 'Farmasi', 'Outros'];
 const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -52,12 +52,16 @@ export default function Products() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [storePayments, setStorePayments] = useState<PaymentMethod[]>([]);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     api.get('/config').then(r => {
       setStorePayments(Array.isArray(r.data.payment_methods)
         ? r.data.payment_methods.filter((m: PaymentMethod) => m.enabled) : []);
+      if (Array.isArray(r.data.categories) && r.data.categories.length > 0) {
+        setCategories(r.data.categories);
+      }
     }).catch(() => {});
   }, []);
 
@@ -84,7 +88,7 @@ export default function Products() {
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  const openCreate = () => { setForm(emptyForm); setEditing(null); setModal('create'); setError(''); };
+  const openCreate = () => { setForm({ ...emptyForm, category: categories[0] ?? 'maquiagem' }); setEditing(null); setModal('create'); setError(''); };
   const openEdit = (p: Product) => {
     setForm({
       name: p.name, description: p.description || '', category: p.category, brand: p.brand || '',
@@ -159,7 +163,7 @@ export default function Products() {
           </div>
           <select value={category} onChange={e => setCategory(e.target.value)} className="input sm:w-44">
             <option value="">Todas as categorias</option>
-            {CATEGORIES.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
+            {categories.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
           </select>
           <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="input sm:w-36">
             <option value="">Todas as marcas</option>
@@ -299,7 +303,7 @@ export default function Products() {
                 <div>
                   <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>Categoria *</label>
                   <select value={form.category} onChange={e => f('category', e.target.value)} className="input capitalize">
-                    {CATEGORIES.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
+                    {categories.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
                   </select>
                 </div>
                 <div>

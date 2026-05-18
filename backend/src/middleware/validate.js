@@ -10,7 +10,6 @@ const validate = (schema, source = 'body') => (req, res, next) => {
   next();
 };
 
-const CATEGORIES = ['maquiagem', 'skincare', 'cabelo', 'corpo', 'perfumes', 'unhas', 'outros'];
 const ORDER_STATUSES = ['pending', 'confirmed', 'processing', 'delivered', 'cancelled'];
 
 const schemas = {
@@ -26,7 +25,8 @@ const schemas = {
   product: Joi.object({
     name: Joi.string().min(2).max(255).required(),
     description: Joi.string().max(2000).allow('', null).optional(),
-    category: Joi.string().valid(...CATEGORIES).required(),
+    category: Joi.string().min(1).max(100).lowercase().required(),
+    brand: Joi.string().min(1).max(100).allow('', null).optional(),
     price_normal: Joi.number().positive().precision(2).required(),
     price_promotion: Joi.number().positive().precision(2).allow(null).optional(),
     image_url: Joi.string().max(2000000).allow('', null).optional(),
@@ -61,6 +61,10 @@ const schemas = {
     address: Joi.string().max(500).allow('', null).optional(),
     whatsapp_template_single: Joi.string().max(2000).allow('', null).optional(),
     whatsapp_template_multiple: Joi.string().max(2000).allow('', null).optional(),
+    categories: Joi.array()
+      .items(Joi.string().min(1).max(100).lowercase())
+      .min(1).max(50)
+      .optional(),
     payment_methods: Joi.array().items(
       Joi.object({
         id: Joi.string().max(50).required(),

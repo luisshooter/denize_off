@@ -1,11 +1,17 @@
 const pool = require('../config/db');
 
-const PUBLIC_FIELDS = 'store_name, logo_url, banner_url, instagram_url, facebook_url, address, payment_methods, whatsapp_template_single, whatsapp_template_multiple, updated_at';
+const DEFAULT_CATEGORIES = ['maquiagem','skincare','cabelo','corpo','perfumes','unhas','outros'];
+
+const PUBLIC_FIELDS = 'store_name, logo_url, banner_url, instagram_url, facebook_url, address, payment_methods, categories, whatsapp_template_single, whatsapp_template_multiple, updated_at';
 
 exports.getPublic = async (req, res, next) => {
   try {
     const { rows } = await pool.query(`SELECT ${PUBLIC_FIELDS} FROM config WHERE id = 1`);
-    res.json(rows[0] || {});
+    const row = rows[0] || {};
+    if (!Array.isArray(row.categories) || row.categories.length === 0) {
+      row.categories = DEFAULT_CATEGORIES;
+    }
+    res.json(row);
   } catch (err) {
     next(err);
   }
@@ -16,7 +22,7 @@ exports.getAdmin = async (req, res, next) => {
     const { rows } = await pool.query(
       `SELECT store_name, whatsapp_number, default_message,
               logo_url, banner_url, instagram_url, facebook_url, address,
-              payment_methods, whatsapp_template_single, whatsapp_template_multiple,
+              payment_methods, categories, whatsapp_template_single, whatsapp_template_multiple,
               updated_at
        FROM config WHERE id = 1`
     );
@@ -28,47 +34,40 @@ exports.getAdmin = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const {
-      store_name, whatsapp_number, default_message,
-      logo_url, banner_url, instagram_url, facebook_url, address,
-      payment_methods, whatsapp_template_single, whatsapp_template_multiple
-    } = req.body;
+    const body = req.body;
+    const sets = [];
+    const params = [];
+    let i = 1;
+
+    const field = (col, val) => { sets.push(`${col} = $${i++}`); params.push(val); };
+
+    if ('store_name'                 in body) field('store_name',                 body.store_name || null);
+    if ('whatsapp_number'            in body) field('whatsapp_number',            body.whatsapp_number || null);
+    if ('default_message'            in body) field('default_message',            body.default_message || null);
+    if ('logo_url'                   in body) field('logo_url',                   body.logo_url || null);
+    if ('banner_url'                 in body) field('banner_url',                 body.banner_url || null);
+    if ('instagram_url'              in body) field('instagram_url',              body.instagram_url || null);
+    if ('facebook_url'               in body) field('facebook_url',              body.facebook_url || null);
+    if ('address'                    in body) field('address',                    body.address || null);
+    if ('payment_methods'            in body) field('payment_methods',            JSON.stringify(body.payment_methods || []));
+    if ('categories'                 in body && body.categories?.length > 0)
+                                             field('categories',                  JSON.stringify(body.categories));
+    if ('whatsapp_template_single'   in body) field('whatsapp_template_single',   body.whatsapp_template_single || null);
+    if ('whatsapp_template_multiple' in body) field('whatsapp_template_multiple', body.whatsapp_template_multiple || null);
+
+    if (sets.length === 0) {
+      const { rows } = await pool.query(`SELECT ${PUBLIC_FIELDS} FROM config WHERE id = 1`);
+      return res.json(rows[0] || {});
+    }
+
+    sets.push('updated_at = NOW()');
+    params.push(1); // WHERE id = $N
 
     const { rows } = await pool.query(
-      `INSERT INTO config
-         (id, store_name, whatsapp_number, default_message,
-          logo_url, banner_url, instagram_url, facebook_url, address,
-          payment_methods, whatsapp_template_single, whatsapp_template_multiple, updated_at)
-       VALUES (1, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
-       ON CONFLICT (id) DO UPDATE SET
-         store_name                = EXCLUDED.store_name,
-         whatsapp_number           = COALESCE(EXCLUDED.whatsapp_number, config.whatsapp_number),
-         default_message           = EXCLUDED.default_message,
-         logo_url                  = EXCLUDED.logo_url,
-         banner_url                = EXCLUDED.banner_url,
-         instagram_url             = EXCLUDED.instagram_url,
-         facebook_url              = EXCLUDED.facebook_url,
-         address                   = EXCLUDED.address,
-         payment_methods           = EXCLUDED.payment_methods,
-         whatsapp_template_single  = EXCLUDED.whatsapp_template_single,
-         whatsapp_template_multiple= EXCLUDED.whatsapp_template_multiple,
-         updated_at                = NOW()
-       RETURNING ${PUBLIC_FIELDS}`,
-      [
-        store_name,
-        whatsapp_number || null,
-        default_message,
-        logo_url || null,
-        banner_url || null,
-        instagram_url || null,
-        facebook_url || null,
-        address || null,
-        payment_methods ? JSON.stringify(payment_methods) : '[]',
-        whatsapp_template_single || null,
-        whatsapp_template_multiple || null
-      ]
+      `UPDATE config SET ${sets.join(', ')} WHERE id = $${i} RETURNING ${PUBLIC_FIELDS}`,
+      params
     );
-    res.json(rows[0]);
+    res.json(rows[0] || {});
   } catch (err) {
     next(err);
   }

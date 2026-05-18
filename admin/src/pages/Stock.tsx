@@ -170,9 +170,9 @@ export default function Stock() {
       {groupOrder.filter(k => (byBrand[k]?.length ?? 0) > 0).map(brandKey => {
         const cfg = BRAND_CFG[brandKey] ?? {
           label: brandKey === '__outros__' ? 'Sem Marca' : brandKey,
-          color: 'var(--text-muted)',
-          bg: 'rgba(0,0,0,0.04)',
-          border: 'var(--card-border)',
+          color: '#64748b',
+          bg: 'rgba(100,116,139,0.06)',
+          border: '#94a3b8',
           tagline: '',
         };
         const ps    = byBrand[brandKey];

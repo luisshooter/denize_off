@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Store, MessageCircle, CreditCard, KeyRound, DatabaseZap } from 'lucide-react';
+import { Store, MessageCircle, CreditCard, KeyRound, DatabaseZap, Tag } from 'lucide-react';
 import api from '../services/api';
 import StoreTab from './settings/StoreTab';
 import WhatsappTab from './settings/WhatsappTab';
 import PaymentsTab, { type PaymentMethod } from './settings/PaymentsTab';
 import AccountTab from './settings/AccountTab';
 import SystemTab from './settings/SystemTab';
+import CategoriesTab from './settings/CategoriesTab';
 
-type Tab = 'loja' | 'whatsapp' | 'pagamentos' | 'conta' | 'sistema';
+type Tab = 'loja' | 'whatsapp' | 'pagamentos' | 'categorias' | 'conta' | 'sistema';
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'loja', label: 'Loja', icon: <Store size={16} /> },
-  { id: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle size={16} /> },
+  { id: 'loja',       label: 'Loja',       icon: <Store size={16} /> },
+  { id: 'whatsapp',   label: 'WhatsApp',   icon: <MessageCircle size={16} /> },
   { id: 'pagamentos', label: 'Pagamentos', icon: <CreditCard size={16} /> },
-  { id: 'conta', label: 'Conta', icon: <KeyRound size={16} /> },
-  { id: 'sistema', label: 'Sistema', icon: <DatabaseZap size={16} /> },
+  { id: 'categorias', label: 'Categorias', icon: <Tag size={16} /> },
+  { id: 'conta',      label: 'Conta',      icon: <KeyRound size={16} /> },
+  { id: 'sistema',    label: 'Sistema',    icon: <DatabaseZap size={16} /> },
 ];
 
 interface ConfigData {
@@ -29,6 +31,7 @@ interface ConfigData {
   whatsapp_template_single: string;
   whatsapp_template_multiple: string;
   payment_methods: PaymentMethod[];
+  categories: string[];
 }
 
 export default function Settings() {
@@ -51,6 +54,9 @@ export default function Settings() {
         whatsapp_template_single: data.whatsapp_template_single || '',
         whatsapp_template_multiple: data.whatsapp_template_multiple || '',
         payment_methods: Array.isArray(data.payment_methods) ? data.payment_methods : [],
+        categories: Array.isArray(data.categories) && data.categories.length > 0
+          ? data.categories
+          : ['maquiagem','skincare','cabelo','corpo','perfumes','unhas','outros'],
       });
     }).catch(() => {
       setLoadError('Erro ao carregar configurações. Tente recarregar a página.');
@@ -121,6 +127,9 @@ export default function Settings() {
         )}
         {activeTab === 'pagamentos' && (
           <PaymentsTab initial={config.payment_methods} />
+        )}
+        {activeTab === 'categorias' && (
+          <CategoriesTab initial={config.categories} />
         )}
         {activeTab === 'conta' && <AccountTab />}
         {activeTab === 'sistema' && <SystemTab />}

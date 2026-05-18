@@ -74,7 +74,7 @@ export default function Home() {
                 Ver Produtos <ArrowRight size={16} />
               </Link>
               <Link
-                to="/produtos?sort=price_normal:asc"
+                to="/produtos?promo=true"
                 className="px-6 py-3 border border-white/30 text-white rounded-full text-sm font-semibold hover:bg-white/10 transition-all flex items-center gap-2 select-none"
               >
                 Ver Promoções
