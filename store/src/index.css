@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -64,8 +64,56 @@
   to   { opacity: 1; }
 }
 
+/* ─────────────────────────────────────────────
+   MASCULINE SMOKE keyframes
+───────────────────────────────────────────── */
+@keyframes smoke-rise {
+  0%   { transform: translateY(0) scaleX(1);   opacity: 0; }
+  20%  { opacity: 0.4; }
+  80%  { opacity: 0.2; }
+  100% { transform: translateY(-120px) scaleX(1.8); opacity: 0; }
+}
+@keyframes gold-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes rose-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes masc-fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fem-fade-up {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ember-rise {
+  0%   { transform: translate(0, 0) scale(1);   opacity: 0.8; }
+  100% { transform: translate(var(--dx, 10px), -80px) scale(0.3); opacity: 0; }
+}
+@keyframes petal-rise {
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg);   opacity: 0; }
+  15%  { opacity: 0.7; }
+  80%  { opacity: 0.3; }
+  100% { transform: translate(var(--pdx, 12px), -110px) scale(0.4) rotate(var(--prot, 45deg)); opacity: 0; }
+}
+@keyframes fem-blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(25px, -18px) scale(1.1); }
+  66%       { transform: translate(-18px, 12px) scale(0.92); }
+}
+@keyframes fem-blob-drift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-30px, 22px) scale(1.12); }
+  70%       { transform: translate(20px, -15px) scale(0.88); }
+}
+
 @layer components {
-  /* ── wrapper ── */
+  /* ══════════════════════════════════════
+     FEMININE — Promo Banner
+  ══════════════════════════════════════ */
   .promo-banner-wrap {
     @apply relative w-full overflow-hidden rounded-3xl mb-8;
     min-height: 210px;
@@ -80,7 +128,6 @@
     .promo-banner-wrap { min-height: 260px; }
   }
 
-  /* ── background blobs ── */
   .promo-blob {
     @apply absolute rounded-full pointer-events-none;
     filter: blur(40px);
@@ -105,13 +152,11 @@
     animation: promo-blob-drift 13s ease-in-out infinite reverse;
   }
 
-  /* ── floating particles ── */
   .promo-particle {
     @apply absolute pointer-events-none;
     animation: promo-float 5s ease-in-out infinite;
   }
 
-  /* ── shimmer sweep ── */
   .promo-shimmer {
     @apply absolute inset-0 pointer-events-none;
   }
@@ -128,13 +173,11 @@
     animation: promo-shimmer-sweep 3.5s ease-in-out infinite;
   }
 
-  /* ── content ── */
   .promo-content {
     @apply relative z-10 flex flex-col items-center justify-center text-center px-6 py-10;
     animation: promo-slide-up 0.6s ease-out both;
   }
 
-  /* ── badge ── */
   .promo-badge {
     @apply flex items-center gap-1.5 text-white/90 font-bold tracking-widest uppercase mb-3;
     font-size: 10px;
@@ -146,7 +189,6 @@
     backdrop-filter: blur(4px);
   }
 
-  /* ── headline ── */
   .promo-headline {
     @apply font-display font-bold text-transparent leading-tight mb-2;
     font-size: clamp(2rem, 6vw, 3.5rem);
@@ -165,16 +207,12 @@
     filter: drop-shadow(0 2px 12px rgba(0,0,0,0.2));
   }
 
-  /* ── subtitle ── */
   .promo-sub {
     @apply text-white/80 font-medium max-w-xs sm:max-w-md;
     font-size: clamp(0.75rem, 2vw, 0.9rem);
   }
 
-  /* ── decorative line ── */
-  .promo-line {
-    @apply flex items-center gap-2 mt-5;
-  }
+  .promo-line { @apply flex items-center gap-2 mt-5; }
   .promo-line-bar {
     @apply block h-px w-20 sm:w-32;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
@@ -183,42 +221,277 @@
     @apply block w-1.5 h-1.5 rounded-full bg-white/70;
     animation: promo-line-dot 2s ease-in-out infinite;
   }
-}
 
-@layer components {
+  /* ══════════════════════════════════════
+     FEMININE — Buttons & Forms
+  ══════════════════════════════════════ */
   .btn-rose {
     @apply bg-brand-rose hover:bg-brand-rose-dark text-white font-semibold
            px-6 py-3 rounded-full transition-all duration-200
            shadow-rose hover:shadow-lg
            active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
-           select-none;
+           select-none cursor-pointer;
   }
   .btn-outline {
     @apply border-2 border-brand-rose text-brand-rose hover:bg-brand-rose hover:text-white
            font-semibold px-6 py-3 rounded-full transition-all duration-200
            active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
-           select-none;
+           select-none cursor-pointer;
   }
   .btn-ghost {
     @apply text-brand-muted hover:text-brand-dark hover:bg-white/60
            font-medium px-4 py-2 rounded-full transition-all duration-150
-           flex items-center justify-center gap-2 select-none;
+           flex items-center justify-center gap-2 select-none cursor-pointer;
   }
   .btn-whatsapp {
     @apply bg-[#25D366] hover:bg-[#20b956] text-white font-semibold
            px-6 py-3 rounded-full transition-all duration-200
            shadow-md hover:shadow-lg
            active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
-           select-none;
+           select-none cursor-pointer;
   }
+
+  /* ── Feminine product card ── */
   .product-card {
-    @apply bg-white rounded-2xl overflow-hidden shadow-card
-           hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer;
+    @apply bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden
+           border border-pink-100/60
+           hover:shadow-rose hover:-translate-y-1.5
+           transition-all duration-300 cursor-pointer;
+    box-shadow: 0 2px 16px rgba(212,80,159,0.06);
   }
+
   .input-field {
     @apply w-full bg-brand-cream border border-brand-sand rounded-xl px-4 py-3 text-sm
            text-brand-dark placeholder-brand-muted
            focus:outline-none focus:ring-2 focus:ring-brand-rose/25 focus:border-brand-rose focus:bg-white
            transition-all;
+  }
+
+  /* ══════════════════════════════════════
+     FEMININE — Hero luxury (light mesh)
+     Mesh gradient = zero filter:blur cost,
+     excelente performance mobile/WebView
+  ══════════════════════════════════════ */
+  .fem-hero {
+    position: relative;
+    overflow: hidden;
+    /* Base blush harmoniza com cream do site */
+    background-color: #FDF2F8;
+    /* Mesh gradient CSS puro — sem filter, sem GPU pesado */
+    background-image:
+      radial-gradient(ellipse 70% 60% at 10% 50%, rgba(212,80,159,0.13) 0%, transparent 100%),
+      radial-gradient(ellipse 50% 45% at 88% 15%, rgba(196,164,90,0.09) 0%, transparent 100%),
+      radial-gradient(ellipse 55% 50% at 65% 90%, rgba(139,92,246,0.07) 0%, transparent 100%),
+      radial-gradient(ellipse 40% 35% at 95% 75%, rgba(244,114,182,0.07) 0%, transparent 100%),
+      radial-gradient(ellipse 30% 30% at 40% 10%, rgba(196,164,90,0.05) 0%, transparent 100%);
+  }
+
+  /* Silk texture overlay — CSS only, zero GPU */
+  .fem-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        48deg,
+        transparent 0px,
+        rgba(212,80,159,0.025) 1px,
+        transparent 2px,
+        transparent 80px
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .fem-petal {
+    position: absolute;
+    border-radius: 50% 12% 50% 12%;
+    pointer-events: none;
+    /* Sem filter:blur — usa opacity para suavidade */
+    animation: petal-rise 8s ease-out infinite;
+  }
+
+  .fem-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Rose shimmer — background-position animation = GPU friendly */
+  .fem-shimmer-text {
+    background: linear-gradient(90deg, #9B1A5A, #D4509F, #C4A45A, #D4509F, #9B1A5A);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rose-shimmer 5s linear infinite;
+  }
+
+  /* CTA bottom feminino — rose sólido, editorial */
+  .fem-cta-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #A83380 0%, #D4509F 50%, #9B3DBF 100%);
+  }
+  .fem-cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 2px,
+        transparent 60px
+      );
+    pointer-events: none;
+  }
+
+  /* Reduce motion — acessibilidade + mobile battery */
+  @media (prefers-reduced-motion: reduce) {
+    .fem-petal,
+    .fem-shimmer-text,
+    .smoke-particle,
+    .masc-smoke-blob,
+    .promo-blob-1,
+    .promo-blob-2,
+    .promo-blob-3 {
+      animation: none !important;
+    }
+    .masc-gold-text {
+      animation: none !important;
+    }
+  }
+
+  /* ══════════════════════════════════════
+     MASCULINE — Hero & Layout
+  ══════════════════════════════════════ */
+  .masc-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0C0A09 0%, #1C1917 30%, #3D2B1F 65%, #1C1917 100%);
+  }
+
+  /* wood grain texture via CSS */
+  .masc-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        92deg,
+        transparent 0px,
+        rgba(255,255,255,0.012) 1px,
+        transparent 2px,
+        transparent 80px
+      ),
+      repeating-linear-gradient(
+        88deg,
+        transparent 0px,
+        rgba(255,255,255,0.008) 1px,
+        transparent 2px,
+        transparent 120px
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .masc-smoke-blob {
+    @apply absolute rounded-full pointer-events-none;
+    filter: blur(60px);
+  }
+
+  .masc-content {
+    @apply relative;
+    z-index: 2;
+  }
+
+  /* ── Masculine product card ── */
+  .masc-card {
+    @apply rounded-2xl overflow-hidden cursor-pointer
+           transition-all duration-300;
+    background: linear-gradient(145deg, #1C1917, #292524);
+    border: 1px solid rgba(202,138,4,0.15);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .masc-card:hover {
+    border-color: rgba(202,138,4,0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px rgba(202,138,4,0.15);
+  }
+
+  /* ── Masculine buttons ── */
+  .btn-masc-gold {
+    @apply font-semibold px-6 py-3 rounded-full transition-all duration-200
+           active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
+           select-none cursor-pointer;
+    background: linear-gradient(135deg, #CA8A04, #A16207);
+    color: #0C0A09;
+    box-shadow: 0 4px 20px rgba(202,138,4,0.35);
+  }
+  .btn-masc-gold:hover {
+    background: linear-gradient(135deg, #EAB308, #CA8A04);
+    box-shadow: 0 6px 28px rgba(202,138,4,0.5);
+  }
+  .btn-masc-outline {
+    @apply font-semibold px-6 py-3 rounded-full transition-all duration-200
+           active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
+           select-none cursor-pointer;
+    border: 1px solid rgba(202,138,4,0.5);
+    color: #CA8A04;
+    background: transparent;
+  }
+  .btn-masc-outline:hover {
+    border-color: rgba(202,138,4,0.9);
+    background: rgba(202,138,4,0.08);
+  }
+
+  /* ── Gold shimmer text ── */
+  .masc-gold-text {
+    background: linear-gradient(90deg, #CA8A04, #FEF08A, #CA8A04, #A16207, #CA8A04);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gold-shimmer 4s linear infinite;
+  }
+
+  /* ── Smoke particle ── */
+  .smoke-particle {
+    @apply absolute rounded-full pointer-events-none;
+    background: radial-gradient(circle, rgba(120,113,108,0.6) 0%, transparent 70%);
+    filter: blur(8px);
+    animation: smoke-rise 6s ease-out infinite;
+  }
+
+  /* ── Masc section bg ── */
+  .masc-section {
+    background: linear-gradient(180deg, #1C1917 0%, #141210 100%);
+  }
+  .masc-section-alt {
+    background: linear-gradient(180deg, #141210 0%, #1C1917 100%);
+  }
+
+  /* ── Gender nav pill ── */
+  .gender-pill-fem {
+    @apply px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 cursor-pointer;
+  }
+  .gender-pill-fem.active {
+    @apply bg-brand-rose text-white shadow-rose;
+  }
+  .gender-pill-fem:not(.active) {
+    @apply text-brand-muted hover:text-brand-rose hover:bg-brand-rose-light;
+  }
+  .gender-pill-masc {
+    @apply px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 cursor-pointer;
+  }
+  .gender-pill-masc.active {
+    background: linear-gradient(135deg, #CA8A04, #A16207);
+    color: #0C0A09;
+    box-shadow: 0 3px 12px rgba(202,138,4,0.4);
+  }
+  .gender-pill-masc:not(.active) {
+    @apply text-masc-stone-light hover:text-masc-gold;
+    background: transparent;
   }
 }

@@ -46,7 +46,7 @@ export default function Products() {
 
   /* Fetch unique brands once on mount */
   useEffect(() => {
-    api.get('/products?limit=100').then(r => {
+    api.get('/products?limit=100&gender=feminino').then(r => {
       const unique = [...new Set<string>(
         r.data.products.map((p: Product) => p.brand).filter(Boolean) as string[]
       )].sort();
@@ -63,6 +63,8 @@ export default function Products() {
       if (category) params.set('category', category);
       if (brand)    params.set('brand', brand);
       if (promo)    params.set('promo', 'true');
+      const genderParam = searchParams.get('gender') || 'feminino';
+      params.set('gender', genderParam);
       const { data } = await api.get(`/products?${params}`);
       setProducts(p === 1 ? data.products : prev => [...prev, ...data.products]);
       setTotal(data.pagination.total);
@@ -70,7 +72,7 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, brand, sort, promo]);
+  }, [search, category, brand, sort, promo, searchParams]);
 
   useEffect(() => { fetchProducts(1); }, [fetchProducts]);
 
