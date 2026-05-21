@@ -1,24 +1,22 @@
-import { Menu, LogOut, Bell, Sun, Moon } from 'lucide-react';
+import { LogOut, Bell, Sun, Moon, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const titles: Record<string, string> = {
-  '/dashboard':    'Dashboard',
-  '/produtos':     'Produtos',
-  '/pedidos':      'Pedidos',
-  '/configuracoes':'Configurações',
+  '/dashboard':     'Dashboard',
+  '/produtos':      'Produtos',
+  '/estoque':       'Estoque',
+  '/pedidos':       'Pedidos',
+  '/configuracoes': 'Configurações',
 };
 
-interface HeaderProps {
-  onMenuClick: () => void;
-}
-
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header() {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const location = useLocation();
   const navigate  = useNavigate();
+
   const title = titles[location.pathname] || 'Painel';
 
   const handleLogout = async () => {
@@ -28,37 +26,39 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header
-      className="px-5 py-3.5 flex items-center justify-between transition-colors duration-300 flex-shrink-0"
+      className="flex items-center justify-between px-4 sm:px-6 py-3 flex-shrink-0"
       style={{
         background: 'var(--header-bg)',
         borderBottom: '1px solid var(--header-border)',
       }}
     >
-      {/* Esquerda */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden p-2 rounded-xl transition-colors"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,80,159,0.1)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      {/* Left: Brand mark (mobile) + page title */}
+      <div className="flex items-center gap-3">
+        {/* Small brand icon visible only on mobile (sidebar hidden) */}
+        <div
+          className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shadow-glow-rose flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
         >
-          <Menu size={20} />
-        </button>
+          <Sparkles size={14} className="text-white" />
+        </div>
         <div>
-          <h1 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</h1>
-          <p className="text-xs hidden sm:block" style={{ color: 'var(--text-muted)' }}>Beauty Store Admin</p>
+          <h1 className="text-sm sm:text-base font-semibold leading-none" style={{ color: 'var(--text-primary)' }}>
+            {title}
+          </h1>
+          <p className="text-[11px] hidden sm:block mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            Beauty Store Admin
+          </p>
         </div>
       </div>
 
-      {/* Direita */}
-      <div className="flex items-center gap-2">
+      {/* Right actions */}
+      <div className="flex items-center gap-1.5 sm:gap-2">
 
-        {/* Toggle dark/light */}
+        {/* Theme toggle */}
         <button
           onClick={toggle}
           title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-          className="p-2 rounded-xl transition-all duration-200 group"
+          className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
           style={{ color: 'var(--text-muted)', border: '1px solid var(--card-border)' }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.1)';
@@ -71,47 +71,44 @@ export default function Header({ onMenuClick }: HeaderProps) {
             (e.currentTarget as HTMLElement).style.borderColor = 'var(--card-border)';
           }}
         >
-          {theme === 'dark'
-            ? <Sun size={17} />
-            : <Moon size={17} />
-          }
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
 
-        {/* Notificações */}
+        {/* Notifications */}
         <button
-          className="p-2 rounded-xl transition-all duration-200 relative"
+          className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
           style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,80,159,0.1)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.1)')}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
         >
-          <Bell size={17} />
+          <Bell size={16} />
         </button>
 
-        {/* Separador */}
-        <div className="w-px h-6 mx-1" style={{ background: 'var(--card-border)' }} />
+        {/* Divider */}
+        <div className="w-px h-5 mx-0.5 sm:mx-1" style={{ background: 'var(--card-border)' }} />
 
-        {/* Usuário */}
-        <div className="flex items-center gap-2.5">
+        {/* User + logout */}
+        <div className="flex items-center gap-2">
           <div className="hidden sm:block text-right">
-            <p className="text-sm font-medium leading-none" style={{ color: 'var(--text-primary)' }}>
+            <p className="text-xs font-semibold leading-none" style={{ color: 'var(--text-primary)' }}>
               {user?.email.split('@')[0]}
             </p>
-            <p className="text-xs mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-[10px] mt-0.5 capitalize" style={{ color: 'var(--text-muted)' }}>
               {user?.role}
             </p>
           </div>
 
-          {/* Avatar */}
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-glow-rose"
-               style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}>
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-glow-rose"
+            style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
+          >
             {user?.email.charAt(0).toUpperCase()}
           </div>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
             title="Sair"
-            className="p-2 rounded-xl transition-all duration-200"
+            className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
             style={{ color: 'var(--text-muted)' }}
             onMouseEnter={e => {
               (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.1)';
@@ -122,7 +119,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
             }}
           >
-            <LogOut size={17} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>

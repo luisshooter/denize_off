@@ -203,3 +203,19 @@
     animation: none !important;
   }
 }
+
+/* ── Shimmer animation keyframe ────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ── Mobile: disable glow-card on touch devices ────── */
+@media (hover: none) {
+  .glow-card::after { display: none; }
+}
+
+/* ── Safe area insets for iOS WebView ─────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+}
