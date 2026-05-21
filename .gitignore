@@ -26,8 +26,12 @@ npm-debug.log*
 Thumbs.db
 desktop.ini
 
-# Pasta interna do Claude Code
+# Ferramentas de IA — nunca commitar
 .claude/
+.agents/
+.mcp.json
+CLAUDE.md
+skills-lock.json
 
 # Arquivos soltos na raiz (não fazem parte do projeto)
 /db.js
@@ -44,3 +48,5 @@ docker-compose.yml
 # Scripts de dev local
 start-dev.bat
 stop-dev.bat
+# Added by code-review-graph
+.code-review-graph/
