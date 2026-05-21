@@ -32,6 +32,7 @@ const schemas = {
     image_url: Joi.string().max(2000000).allow('', null).optional(),
     stock: Joi.number().integer().min(0).max(99999).required(),
     status: Joi.string().valid('active', 'inactive').default('active'),
+    gender: Joi.string().valid('feminino', 'masculino', 'misto').default('feminino'),
     payment_method_ids: Joi.array().items(Joi.string().max(50)).allow(null).optional()
   }),
 

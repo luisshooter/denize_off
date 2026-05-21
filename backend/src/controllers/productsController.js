@@ -34,6 +34,14 @@ exports.getAll = async (req, res, next) => {
       conditions.push(`price_promotion IS NOT NULL`);
     }
 
+    if (req.query.gender) {
+      if (req.query.gender === 'masculino') {
+        conditions.push(`gender IN ('masculino', 'misto')`);
+      } else if (req.query.gender === 'feminino') {
+        conditions.push(`gender IN ('feminino', 'misto')`);
+      }
+    }
+
     if (req.query.q) {
       params.push(`%${req.query.q.slice(0, 100)}%`);
       conditions.push(`(name ILIKE $${params.length} OR description ILIKE $${params.length} OR brand ILIKE $${params.length})`);
@@ -47,7 +55,7 @@ exports.getAll = async (req, res, next) => {
 
     const { rows } = await pool.query(
       `SELECT id, name, description, category, brand, price_normal, price_promotion,
-              image_url, stock, status, payment_method_ids, created_at,
+              image_url, stock, status, gender, payment_method_ids, created_at,
               COUNT(*) OVER() AS total_count
        FROM products ${where}
        ORDER BY ${sort} ${dir}
@@ -75,7 +83,7 @@ exports.getById = async (req, res, next) => {
   try {
     const { rows } = await pool.query(
       `SELECT id, name, description, category, brand, price_normal, price_promotion,
-              image_url, stock, status, payment_method_ids, created_at
+              image_url, stock, status, gender, payment_method_ids, created_at
        FROM products WHERE id = $1`,
       [req.params.id]
     );
@@ -92,12 +100,12 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids } = req.body;
+    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, gender, payment_method_ids } = req.body;
     const { rows } = await pool.query(
-      `INSERT INTO products (name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids, created_at`,
-      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status || 'active',
+      `INSERT INTO products (name, description, category, brand, price_normal, price_promotion, image_url, stock, status, gender, payment_method_ids)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, gender, payment_method_ids, created_at`,
+      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status || 'active', gender || 'feminino',
        payment_method_ids?.length ? JSON.stringify(payment_method_ids) : null]
     );
     res.status(201).json(rows[0]);
@@ -108,15 +116,15 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids } = req.body;
+    const { name, description, category, brand, price_normal, price_promotion, image_url, stock, status, gender, payment_method_ids } = req.body;
     const { rows } = await pool.query(
       `UPDATE products SET
          name = $1, description = $2, category = $3, brand = $4,
          price_normal = $5, price_promotion = $6, image_url = $7,
-         stock = $8, status = $9, payment_method_ids = $10, updated_at = NOW()
-       WHERE id = $11
-       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, payment_method_ids, updated_at`,
-      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status,
+         stock = $8, status = $9, gender = $10, payment_method_ids = $11, updated_at = NOW()
+       WHERE id = $12
+       RETURNING id, name, description, category, brand, price_normal, price_promotion, image_url, stock, status, gender, payment_method_ids, updated_at`,
+      [name, description || null, category, brand || null, price_normal, price_promotion || null, image_url || null, stock, status, gender || 'feminino',
        payment_method_ids?.length ? JSON.stringify(payment_method_ids) : null,
        req.params.id]
     );
