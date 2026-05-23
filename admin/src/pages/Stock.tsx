@@ -341,45 +341,59 @@ export default function Stock() {
                       )}
                     </div>
 
-                    {/* Stock adjuster */}
+                    {/* Stock adjuster — touch-friendly (min 36px) */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => adjust(product.id, stock, -1)}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70"
-                        style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+                        className="flex items-center justify-center rounded-xl transition-all duration-150 active:scale-90 cursor-pointer"
+                        style={{
+                          minWidth: 36, minHeight: 36,
+                          background: 'rgba(212,80,159,0.07)',
+                          border: '1px solid rgba(212,80,159,0.18)',
+                          color: 'var(--text-muted)',
+                        }}
                       >
-                        <Minus size={11} />
+                        <Minus size={13} />
                       </button>
                       <input
                         type="number"
                         min={0}
                         value={stock}
                         onChange={e => setVal(product.id, e.target.value)}
-                        className="input w-14 text-center text-sm font-bold py-1.5"
+                        className="input text-center text-sm font-bold"
                         style={{
+                          width: 52,
+                          minHeight: 36,
+                          padding: '0 4px',
                           borderColor: isDirty ? cfg.border : undefined,
                           color: isOut ? '#EF4444' : isLow ? '#F59E0B' : 'var(--text-primary)',
                         }}
                       />
                       <button
                         onClick={() => adjust(product.id, stock, 1)}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:opacity-70"
-                        style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+                        className="flex items-center justify-center rounded-xl transition-all duration-150 active:scale-90 cursor-pointer"
+                        style={{
+                          minWidth: 36, minHeight: 36,
+                          background: 'rgba(212,80,159,0.07)',
+                          border: '1px solid rgba(212,80,159,0.18)',
+                          color: 'var(--text-muted)',
+                        }}
                       >
-                        <Plus size={11} />
+                        <Plus size={13} />
                       </button>
                     </div>
 
-                    {/* Save button */}
+                    {/* Save button — touch-friendly */}
                     <button
                       onClick={() => saveStock(product)}
                       disabled={!isDirty || isSav}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0"
+                      className="flex items-center justify-center rounded-xl transition-all duration-150 flex-shrink-0 active:scale-90"
                       style={{
-                        background: isSaved ? 'rgba(16,185,129,0.12)' : isDirty ? `${cfg.border}22` : 'transparent',
+                        minWidth: 36, minHeight: 36,
+                        background: isSaved ? 'rgba(16,185,129,0.12)' : isDirty ? `${cfg.border}20` : 'transparent',
                         color: isSaved ? '#10B981' : isDirty ? cfg.border : 'transparent',
                         cursor: isDirty ? 'pointer' : 'default',
-                        border: isDirty && !isSaved ? `1px solid ${cfg.border}40` : '1px solid transparent',
+                        border: isDirty && !isSaved ? `1px solid ${cfg.border}35` : '1px solid transparent',
                       }}
                       title={isDirty ? 'Salvar alteração' : ''}
                     >

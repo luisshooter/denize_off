@@ -365,11 +365,23 @@ export default function Products() {
         )}
       </div>
 
-      {/* Create / Edit Modal */}
+      {/* Create / Edit Modal — full-screen no mobile, centered no desktop */}
       {modal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col"
-               style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center sm:p-4">
+          <div
+            className="w-full sm:max-w-lg flex flex-col sm:rounded-2xl"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
+              borderRadius: '20px 20px 0 0',
+              maxHeight: '92dvh',
+              boxShadow: '0 -8px 40px rgba(0,0,0,0.25)',
+            }}
+          >
+            {/* Drag handle — só mobile */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--card-border)' }} />
+            </div>
             <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--card-border)' }}>
               <h3 className="font-display font-bold text-lg" style={{ color: 'var(--text-primary)' }}>
                 {modal === 'create' ? 'Novo Produto' : 'Editar Produto'}

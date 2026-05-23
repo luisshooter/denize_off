@@ -230,31 +230,61 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
     <div className="product-card group" onClick={() => navigate(`/produto/${product.id}`)}>
 
       {/* Image */}
-      <div className="relative aspect-[4/5] bg-gradient-to-br from-brand-cream to-brand-rose-light overflow-hidden">
+      <div className="relative aspect-[4/5] overflow-hidden" style={{ background: 'linear-gradient(135deg, #FDF0F8, #FFF8F3)' }}>
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-cream to-brand-rose-light">
-            <ImageOff size={32} className="text-brand-rose/25" />
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2"
+               style={{ background: 'linear-gradient(135deg, #FDF0F8, #FFF8F3)' }}>
+            <ImageOff size={28} style={{ color: 'rgba(212,80,159,0.2)' }} />
+          </div>
+        )}
+
+        {/* Hover quick-action overlay — desktop only */}
+        {product.stock > 0 && (
+          <div
+            className="absolute inset-x-0 bottom-0 flex gap-1.5 p-2.5 opacity-0 group-hover:opacity-100 transition-all duration-250 pointer-events-none group-hover:pointer-events-auto"
+            style={{ background: 'linear-gradient(to top, rgba(30,27,46,0.72) 0%, transparent 100%)' }}
+          >
+            <button
+              onClick={handleCallNow}
+              className="flex-1 text-white text-[11px] font-semibold py-2 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
+              style={{ background: '#25D366' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#20b956')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#25D366')}
+            >
+              <MessageCircle size={12} /> Chamar
+            </button>
+            <button
+              onClick={handleAddCart}
+              className="flex-1 text-white text-[11px] font-semibold py-2 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
+              style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
+            >
+              <ShoppingBag size={12} /> Carrinho
+            </button>
           </div>
         )}
 
         {discount > 0 && (
-          <div className="absolute top-3 left-3 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #D4509F, #8B5CF6)' }}>
-            <Tag size={9} />
+          <div
+            className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #D4509F, #9B3DBF)' }}
+          >
+            <Tag size={8} />
             -{discount}%
           </div>
         )}
 
         {product.stock === 0 && (
-          <div className="absolute inset-0 bg-brand-dark/50 backdrop-blur-[1px] flex items-center justify-center">
-            <span className="text-white font-semibold text-sm bg-brand-dark/70 px-4 py-1.5 rounded-full tracking-wide">
+          <div className="absolute inset-0 backdrop-blur-[1px] flex items-center justify-center"
+               style={{ background: 'rgba(30,27,46,0.45)' }}>
+            <span className="text-white font-semibold text-sm px-4 py-1.5 rounded-full tracking-wide"
+                  style={{ background: 'rgba(30,27,46,0.75)', border: '1px solid rgba(255,255,255,0.15)' }}>
               Esgotado
             </span>
           </div>
@@ -262,10 +292,10 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
       </div>
 
       {/* Info */}
-      <div className="p-3.5 flex flex-col gap-1.5">
+      <div className="p-3 flex flex-col gap-1.5">
         <div className="flex items-center gap-1.5 flex-wrap">
           {product.brand && <BrandBadge brand={product.brand} />}
-          <span className="text-[10px] font-medium text-brand-rose capitalize bg-brand-rose-light px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-semibold text-brand-rose capitalize bg-brand-rose-light px-2 py-0.5 rounded-full">
             {product.category}
           </span>
         </div>
@@ -292,10 +322,11 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           </div>
         )}
 
-        <div className="flex gap-1.5 pt-1">
+        {/* Mobile buttons — visíveis direto no card (sem hover) */}
+        <div className="flex gap-1.5 pt-1 sm:hidden">
           <button
             onClick={handleCallNow}
-            className="flex-1 bg-[#25D366] hover:bg-[#20b956] text-white text-xs font-semibold py-2.5 rounded-full transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98] select-none cursor-pointer"
+            className="flex-1 bg-[#25D366] text-white text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
           >
             <MessageCircle size={13} />
             Chamar
@@ -303,7 +334,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           <button
             onClick={handleAddCart}
             disabled={product.stock === 0}
-            className="flex-1 bg-brand-rose hover:bg-brand-rose-dark disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold py-2.5 rounded-full transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98] select-none cursor-pointer"
+            className="flex-1 bg-brand-rose disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
           >
             <ShoppingBag size={13} />
             Carrinho

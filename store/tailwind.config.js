@@ -31,8 +31,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Nunito Sans', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Rubik', 'Playfair Display', 'Georgia', 'serif'],
+        'fem-display': ['Playfair Display', 'Georgia', 'serif'],
         'masc-display': ['Bodoni Moda', 'Georgia', 'serif'],
         'masc-body': ['Jost', 'system-ui', 'sans-serif'],
       },

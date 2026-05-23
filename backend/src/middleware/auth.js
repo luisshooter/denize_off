@@ -22,4 +22,16 @@ const requireAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, requireAdmin };
+const optionalAuthenticate = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return next();
+  const token = authHeader.split(' ')[1];
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET, { issuer: 'beauty-store' });
+  } catch {
+    // token inválido/expirado — trata como público
+  }
+  next();
+};
+
+module.exports = { authenticate, requireAdmin, optionalAuthenticate };

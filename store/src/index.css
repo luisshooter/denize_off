@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Bodoni+Moda:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,10 @@
 @layer base {
   * { box-sizing: border-box; }
   body {
-    @apply bg-brand-cream text-brand-dark font-sans antialiased;
+    background: #FFF8F3;
+    color: #1E1B2E;
+    font-family: 'Nunito Sans', 'Inter', system-ui, sans-serif;
+    @apply antialiased;
   }
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
@@ -253,11 +256,15 @@
 
   /* ── Feminine product card ── */
   .product-card {
-    @apply bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden
-           border border-pink-100/60
-           hover:shadow-rose hover:-translate-y-1.5
-           transition-all duration-300 cursor-pointer;
-    box-shadow: 0 2px 16px rgba(212,80,159,0.06);
+    @apply bg-white rounded-2xl overflow-hidden cursor-pointer;
+    border: 1px solid rgba(212,80,159,0.1);
+    box-shadow: 0 2px 12px rgba(212,80,159,0.06), 0 1px 3px rgba(30,27,46,0.04);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.2s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(212,80,159,0.18), 0 4px 12px rgba(30,27,46,0.08);
+    border-color: rgba(212,80,159,0.3);
   }
 
   .input-field {

@@ -17,8 +17,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif']
+        sans: ['Nunito Sans', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
         card: '0 4px 20px rgba(212, 80, 159, 0.08)',
