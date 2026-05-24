@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X, Tag } from 'lucide-react';
 import ProductCard, { Product } from '../components/ProductCard';
 import PromoBanner from '../components/PromoBanner';
-import { useStoreConfig } from '../context/StoreConfigContext';
 import api from '../services/api';
+
 const SORT_OPTIONS = [
   { value: 'created_at:desc', label: 'Mais recentes' },
   { value: 'price_normal:asc', label: 'Menor preço' },
@@ -18,7 +18,7 @@ function FilterPill({
   return (
     <button
       onClick={onClick}
-      className={`px-3.5 py-1.5 rounded-full text-xs font-medium capitalize transition-all duration-150 select-none ${
+      className={`px-3.5 py-1.5 rounded-full text-xs font-medium capitalize transition-all duration-150 select-none cursor-pointer ${
         active
           ? 'bg-brand-rose text-white shadow-sm'
           : 'bg-white border border-brand-sand text-brand-muted hover:border-brand-rose hover:text-brand-rose'
@@ -30,13 +30,13 @@ function FilterPill({
 }
 
 export default function Products() {
-  const { categories: CATEGORIES } = useStoreConfig();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts]         = useState<Product[]>([]);
   const [total, setTotal]               = useState(0);
   const [loading, setLoading]           = useState(true);
-  const [page, setPage]                 = useState(1);
   const [allBrands, setAllBrands]       = useState<string[]>([]);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const search   = searchParams.get('q') || '';
   const category = searchParams.get('category') || '';
@@ -44,21 +44,21 @@ export default function Products() {
   const sort     = searchParams.get('sort') || 'created_at:desc';
   const promo    = searchParams.get('promo') === 'true';
 
-  /* Fetch unique brands once on mount */
   useEffect(() => {
-    api.get('/products?limit=100&gender=feminino').then(r => {
-      const unique = [...new Set<string>(
-        r.data.products.map((p: Product) => p.brand).filter(Boolean) as string[]
-      )].sort();
-      setAllBrands(unique);
+    api.get('/products?limit=2000').then(r => {
+      const ps: Product[] = r.data.products;
+      const uniqueBrands = [...new Set<string>(ps.map(p => p.brand).filter(Boolean) as string[])].sort();
+      const uniqueCats   = [...new Set<string>(ps.map((p: any) => p.category).filter(Boolean) as string[])].sort();
+      setAllBrands(uniqueBrands);
+      setAllCategories(uniqueCats);
     }).catch(() => {});
   }, []);
 
-  const fetchProducts = useCallback(async (p = 1) => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const [sortField, sortDir] = sort.split(':');
-      const params = new URLSearchParams({ limit: '20', page: String(p), sort: sortField, dir: sortDir });
+      const params = new URLSearchParams({ limit: '2000', sort: sortField, dir: sortDir });
       if (search)   params.set('q', search);
       if (category) params.set('category', category);
       if (brand)    params.set('brand', brand);
@@ -66,15 +66,27 @@ export default function Products() {
       const genderParam = searchParams.get('gender') || 'feminino';
       params.set('gender', genderParam);
       const { data } = await api.get(`/products?${params}`);
-      setProducts(p === 1 ? data.products : prev => [...prev, ...data.products]);
+      setProducts(data.products);
       setTotal(data.pagination.total);
-      setPage(p);
     } finally {
       setLoading(false);
     }
   }, [search, category, brand, sort, promo, searchParams]);
 
-  useEffect(() => { fetchProducts(1); }, [fetchProducts]);
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  /* scroll reveal */
+  useEffect(() => {
+    if (!gridRef.current) return;
+    const cards = gridRef.current.querySelectorAll<HTMLElement>('.card-reveal');
+    if (!cards.length) return;
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('in-view'); observer.unobserve(e.target); } }),
+      { threshold: 0.08 }
+    );
+    cards.forEach(c => observer.observe(c));
+    return () => observer.disconnect();
+  }, [products]);
 
   const set = (key: string, value: string) => {
     setSearchParams(prev => {
@@ -104,7 +116,7 @@ export default function Products() {
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={() => set('promo', '')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all select-none ${
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all select-none cursor-pointer ${
               !promo
                 ? 'bg-brand-dark text-white shadow-sm'
                 : 'bg-white border border-brand-sand text-brand-muted hover:text-brand-dark'
@@ -114,7 +126,7 @@ export default function Products() {
           </button>
           <button
             onClick={() => set('promo', 'true')}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 select-none ${
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 select-none cursor-pointer ${
               promo
                 ? 'bg-brand-rose text-white shadow-rose'
                 : 'bg-white border border-brand-sand text-brand-muted hover:border-brand-rose hover:text-brand-rose'
@@ -125,13 +137,11 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Promo animated banner */}
       {promo && <PromoBanner />}
 
       {/* Filter panel */}
       <div className="bg-white rounded-2xl border border-brand-sand/60 shadow-card p-4 mb-8 space-y-4">
 
-        {/* Search + sort row */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
@@ -152,7 +162,6 @@ export default function Products() {
           </select>
         </div>
 
-        {/* Category filters */}
         <div>
           <div className="flex items-center gap-2 mb-2.5">
             <SlidersHorizontal size={13} className="text-brand-muted" />
@@ -160,13 +169,12 @@ export default function Products() {
           </div>
           <div className="flex flex-wrap gap-2">
             <FilterPill active={!category} onClick={() => set('category', '')}>Todas</FilterPill>
-            {CATEGORIES.map(c => (
+            {allCategories.map(c => (
               <FilterPill key={c} active={category === c} onClick={() => set('category', c)}>{c}</FilterPill>
             ))}
           </div>
         </div>
 
-        {/* Brand filters (only when brands exist) */}
         {allBrands.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-2.5">
@@ -182,12 +190,11 @@ export default function Products() {
           </div>
         )}
 
-        {/* Clear filters */}
         {hasFilters && (
           <div className="pt-1 border-t border-brand-sand/50">
             <button
               onClick={() => setSearchParams({})}
-              className="text-xs text-brand-muted hover:text-red-500 flex items-center gap-1 transition-colors select-none"
+              className="text-xs text-brand-muted hover:text-red-500 flex items-center gap-1 transition-colors select-none cursor-pointer"
             >
               <X size={12} /> Limpar filtros
             </button>
@@ -214,29 +221,18 @@ export default function Products() {
           <Search size={44} className="mx-auto mb-4 opacity-20" />
           <p className="font-semibold text-lg text-brand-dark">Nenhum produto encontrado</p>
           <p className="text-sm mt-1">Tente outros termos ou categorias</p>
-          <button onClick={() => setSearchParams({})} className="mt-6 btn-outline text-sm px-5 py-2.5 min-h-0 h-10">
+          <button onClick={() => setSearchParams({})} className="mt-6 btn-outline text-sm px-5 py-2.5 min-h-0 h-10 cursor-pointer">
             Limpar filtros
           </button>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
-          {products.length < total && (
-            <div className="text-center mt-12">
-              <button
-                onClick={() => fetchProducts(page + 1)}
-                disabled={loading}
-                className="btn-outline mx-auto"
-              >
-                {loading
-                  ? <div className="w-5 h-5 border-2 border-brand-rose border-t-transparent rounded-full animate-spin" />
-                  : 'Carregar mais'}
-              </button>
+        <div ref={gridRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {products.map((p, i) => (
+            <div key={p.id} className="card-reveal" style={{ transitionDelay: `${(i % 12) * 55}ms` }}>
+              <ProductCard product={p} />
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
     </main>
   );
