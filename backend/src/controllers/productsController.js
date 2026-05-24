@@ -137,6 +137,25 @@ exports.update = async (req, res, next) => {
   }
 };
 
+exports.getBrands = async (req, res, next) => {
+  try {
+    const conditions = ["status = 'active'", "brand IS NOT NULL", "brand != ''"];
+    const params = [];
+    if (req.query.gender && ['masculino', 'feminino'].includes(req.query.gender)) {
+      params.push(req.query.gender);
+      conditions.push(`(gender = $${params.length} OR gender = 'misto')`);
+    }
+    const where = 'WHERE ' + conditions.join(' AND ');
+    const { rows } = await pool.query(
+      `SELECT DISTINCT brand FROM products ${where} ORDER BY brand`,
+      params
+    );
+    res.json({ brands: rows.map(r => r.brand) });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.remove = async (req, res, next) => {
   try {
     const { rows } = await pool.query(

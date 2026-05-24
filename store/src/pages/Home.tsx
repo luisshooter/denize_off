@@ -46,13 +46,11 @@ export default function Home() {
     Promise.all([
       api.get('/products?limit=6&gender=feminino&sort=price_normal&dir=desc'),
       api.get('/products?limit=2&gender=misto&sort=price_normal&dir=desc'),
-    ]).then(([femR, mistoR]) => {
+      api.get('/products/brands?gender=feminino'),
+    ]).then(([femR, mistoR, brandsR]) => {
       const all = [...femR.data.products, ...mistoR.data.products];
       setFeatured(all);
-      const unique = [...new Set<string>(
-        all.map((p: Product) => p.brand).filter(Boolean) as string[]
-      )];
-      setBrands(unique);
+      setBrands(brandsR.data.brands);
       setHasPromo(all.some((p: Product) => p.price_promotion));
     });
     api.get('/config').then(r => {

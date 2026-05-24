@@ -29,13 +29,11 @@ export default function MasculinoHome() {
     Promise.all([
       api.get('/products?limit=6&gender=masculino&sort=price_normal&dir=desc'),
       api.get('/products?limit=2&gender=misto&sort=price_normal&dir=desc'),
-    ]).then(([mascR, mistoR]) => {
+      api.get('/products/brands?gender=masculino'),
+    ]).then(([mascR, mistoR, brandsR]) => {
       const all = [...mascR.data.products, ...mistoR.data.products];
       setFeatured(all);
-      const unique = [...new Set<string>(
-        all.map((p: Product) => p.brand).filter(Boolean) as string[]
-      )];
-      setBrands(unique);
+      setBrands(brandsR.data.brands);
     });
     api.get('/config').then(r => {
       if (r.data.store_name) setStoreName(r.data.store_name);

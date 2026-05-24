@@ -4,6 +4,7 @@ const { authenticate, requireAdmin, optionalAuthenticate } = require('../middlew
 const { validate, schemas } = require('../middleware/validate');
 
 router.get('/', optionalAuthenticate, productsController.getAll);
+router.get('/brands', productsController.getBrands);
 router.get('/:id', optionalAuthenticate, productsController.getById);
 router.post('/', authenticate, requireAdmin, validate(schemas.product), productsController.create);
 router.put('/:id', authenticate, requireAdmin, validate(schemas.product), productsController.update);
