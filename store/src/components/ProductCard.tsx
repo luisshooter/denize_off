@@ -12,7 +12,7 @@ const BRAND_STYLES: Record<string, { bg: string; text: string; dot: string }> = 
 
 const BRAND_STYLES_MASC: Record<string, { bg: string; text: string; dot: string }> = {
   Natura:  { bg: 'rgba(16,185,129,0.12)', text: '#10b981', dot: '#10b981' },
-  Avon:    { bg: 'rgba(202,138,4,0.12)',  text: '#CA8A04', dot: '#CA8A04' },
+  Avon:    { bg: 'rgba(196,154,108,0.12)',  text: '#C49A6C', dot: '#C49A6C' },
   Farmasi: { bg: 'rgba(139,92,246,0.12)', text: '#8b5cf6', dot: '#8b5cf6' },
 };
 
@@ -137,15 +137,15 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1C1917, #3D2B1F)' }}>
-              <ImageOff size={32} style={{ color: 'rgba(202,138,4,0.2)' }} />
+            <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1A1714, #221810)' }}>
+              <ImageOff size={32} style={{ color: 'rgba(196,154,108,0.2)' }} />
             </div>
           )}
 
           {discount > 0 && (
             <div
               className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1"
-              style={{ background: 'linear-gradient(135deg, #CA8A04, #A16207)', color: '#0C0A09' }}
+              style={{ background: 'linear-gradient(135deg, #C49A6C, #A07845)', color: '#0F0E0D' }}
             >
               <Tag size={9} />
               -{discount}%
@@ -154,7 +154,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
 
           {product.stock === 0 && (
             <div className="absolute inset-0 backdrop-blur-[2px] flex items-center justify-center" style={{ background: 'rgba(12,10,9,0.65)' }}>
-              <span className="font-semibold text-sm px-4 py-1.5 rounded-full tracking-wide" style={{ color: '#D6D3D1', background: 'rgba(28,25,23,0.8)', border: '1px solid rgba(202,138,4,0.2)' }}>
+              <span className="font-semibold text-sm px-4 py-1.5 rounded-full tracking-wide" style={{ color: '#D6D3D1', background: 'rgba(28,25,23,0.8)', border: '1px solid rgba(196,154,108,0.2)' }}>
                 Esgotado
               </span>
             </div>
@@ -167,18 +167,18 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
             {product.brand && <BrandBadge brand={product.brand} masc />}
             <span
               className="text-[10px] font-medium capitalize px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(202,138,4,0.1)', color: '#CA8A04' }}
+              style={{ background: 'rgba(196,154,108,0.10)', color: '#C49A6C' }}
             >
               {product.category}
             </span>
           </div>
 
-          <h3 className="font-medium text-sm leading-snug line-clamp-2" style={{ color: '#F5F0EB', fontFamily: "'Jost', system-ui, sans-serif" }}>
+          <h3 className="font-medium text-sm leading-snug line-clamp-2" style={{ color: '#F5F0EB', fontFamily: "'Montserrat', system-ui, sans-serif" }}>
             {product.name}
           </h3>
 
           <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-bold leading-none masc-gold-text" style={{ fontFamily: "'Bodoni Moda', Georgia, serif" }}>
+            <span className="text-lg font-bold leading-none masc-gold-text" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
               {fmt(price)}
             </span>
             {product.price_promotion && (
@@ -212,9 +212,9 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
               onClick={handleAddCart}
               disabled={product.stock === 0}
               className="flex-1 text-xs font-semibold py-2.5 rounded-full transition-all active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: 'linear-gradient(135deg, #CA8A04, #A16207)', color: '#0C0A09' }}
-              onMouseEnter={e => { if (!product.stock) return; (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #EAB308, #CA8A04)'; }}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #CA8A04, #A16207)'}
+              style={{ background: 'linear-gradient(135deg, #C49A6C, #A07845)', color: '#0F0E0D' }}
+              onMouseEnter={e => { if (!product.stock) return; (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #D4B07C, #C49A6C)'; }}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #C49A6C, #A07845)'}
             >
               <ShoppingBag size={13} />
               Carrinho
@@ -230,7 +230,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
     <div className="product-card group" onClick={() => navigate(`/produto/${product.id}`)}>
 
       {/* Image */}
-      <div className="relative aspect-[4/5] overflow-hidden" style={{ background: 'linear-gradient(135deg, #FDF0F8, #FFF8F3)' }}>
+      <div className="relative aspect-[4/5] overflow-hidden" style={{ background: 'linear-gradient(135deg, #F5EFE9, #FAF6F1)' }}>
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -240,8 +240,8 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2"
-               style={{ background: 'linear-gradient(135deg, #FDF0F8, #FFF8F3)' }}>
-            <ImageOff size={28} style={{ color: 'rgba(212,80,159,0.2)' }} />
+               style={{ background: 'linear-gradient(135deg, #F5EFE9, #FAF6F1)' }}>
+            <ImageOff size={28} style={{ color: 'rgba(196,154,108,0.25)' }} />
           </div>
         )}
 
@@ -249,7 +249,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
         {product.stock > 0 && (
           <div
             className="absolute inset-x-0 bottom-0 flex gap-1.5 p-2.5 opacity-0 group-hover:opacity-100 transition-all duration-250 pointer-events-none group-hover:pointer-events-auto"
-            style={{ background: 'linear-gradient(to top, rgba(30,27,46,0.72) 0%, transparent 100%)' }}
+            style={{ background: 'linear-gradient(to top, rgba(26,10,16,0.65) 0%, transparent 100%)' }}
           >
             <button
               onClick={handleCallNow}
@@ -263,7 +263,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
             <button
               onClick={handleAddCart}
               className="flex-1 text-white text-[11px] font-semibold py-2 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
-              style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
+              style={{ background: 'linear-gradient(135deg, #5C2040, #3D1225)' }}
             >
               <ShoppingBag size={12} /> Carrinho
             </button>
@@ -272,8 +272,8 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
 
         {discount > 0 && (
           <div
-            className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #D4509F, #9B3DBF)' }}
+            className="absolute top-2.5 left-2.5 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #C49A6C, #A07845)', color: '#3D1225' }}
           >
             <Tag size={8} />
             -{discount}%
@@ -295,19 +295,20 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
       <div className="p-3 flex flex-col gap-1.5">
         <div className="flex items-center gap-1.5 flex-wrap">
           {product.brand && <BrandBadge brand={product.brand} />}
-          <span className="text-[10px] font-semibold text-brand-rose capitalize bg-brand-rose-light px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-semibold capitalize px-2 py-0.5 rounded-full"
+            style={{ background: 'rgba(196,154,108,0.10)', color: '#A07845' }}>
             {product.category}
           </span>
         </div>
 
-        <h3 className="font-medium text-brand-dark text-sm leading-snug line-clamp-2">
+        <h3 className="font-medium text-sm leading-snug line-clamp-2" style={{ color: '#1A0A10' }}>
           {product.name}
         </h3>
 
         <div className="flex items-baseline gap-1.5">
-          <span className="font-display text-lg font-bold text-brand-rose leading-none">{fmt(price)}</span>
+          <span className="font-display text-lg font-bold leading-none" style={{ color: '#5C2040' }}>{fmt(price)}</span>
           {product.price_promotion && (
-            <span className="text-xs text-brand-muted line-through">{fmt(product.price_normal)}</span>
+            <span className="text-xs line-through" style={{ color: '#8C7378' }}>{fmt(product.price_normal)}</span>
           )}
         </div>
 
@@ -317,7 +318,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
               <PaymentBadge key={m.id} method={m} price={price} />
             ))}
             {visibleMethods.length > 2 && (
-              <span className="text-[10px] text-brand-muted self-center">+{visibleMethods.length - 2}</span>
+              <span className="text-[10px] self-center" style={{ color: '#8C7378' }}>+{visibleMethods.length - 2}</span>
             )}
           </div>
         )}
@@ -334,7 +335,8 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           <button
             onClick={handleAddCart}
             disabled={product.stock === 0}
-            className="flex-1 bg-brand-rose disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
+            className="flex-1 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
+            style={{ background: 'linear-gradient(135deg, #5C2040, #3D1225)', color: '#FAF6F1' }}
           >
             <ShoppingBag size={13} />
             Carrinho
