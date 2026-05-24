@@ -4,10 +4,12 @@ const VALID_SORT = { created_at: true, price_normal: true, name: true, stock: tr
 
 exports.getAll = async (req, res, next) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
-    const offset = (page - 1) * limit;
+    const page    = Math.max(1, parseInt(req.query.page) || 1);
     const isAdmin = ['admin', 'superadmin'].includes(req.user?.role);
+    const limit   = isAdmin
+      ? Math.min(10000, Math.max(1, parseInt(req.query.limit) || 20))
+      : Math.min(2000,  Math.max(1, parseInt(req.query.limit) || 20));
+    const offset  = (page - 1) * limit;
 
     const conditions = [];
     const params = [];
@@ -35,10 +37,10 @@ exports.getAll = async (req, res, next) => {
     }
 
     if (req.query.gender) {
-      if (req.query.gender === 'masculino') {
-        conditions.push(`gender IN ('masculino', 'misto')`);
-      } else if (req.query.gender === 'feminino') {
-        conditions.push(`gender IN ('feminino', 'misto')`);
+      const validGenders = ['masculino', 'feminino', 'misto'];
+      if (validGenders.includes(req.query.gender)) {
+        params.push(req.query.gender);
+        conditions.push(`gender = $${params.length}`);
       }
     }
 
