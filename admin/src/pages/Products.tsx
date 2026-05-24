@@ -61,6 +61,8 @@ export default function Products() {
   const [error, setError] = useState('');
   const [storePayments, setStorePayments] = useState<PaymentMethod[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<{ total: number; pages: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -83,16 +85,17 @@ export default function Products() {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ limit: '50' });
+      const params = new URLSearchParams({ limit: '20', page: String(page) });
       if (search) params.set('q', search);
       if (category) params.set('category', category);
       if (brandFilter) params.set('brand', brandFilter);
       const { data } = await api.get(`/products?${params}`);
       setProducts(data.products);
+      setPagination(data.pagination);
     } finally {
       setLoading(false);
     }
-  }, [search, category, brandFilter]);
+  }, [search, category, brandFilter, page]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
@@ -152,7 +155,9 @@ export default function Products() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Produtos</h2>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{products.length} produto(s) encontrado(s)</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+            {pagination ? `${pagination.total} produto(s) encontrado(s)` : `${products.length} produto(s)`}
+          </p>
         </div>
         <button onClick={openCreate} className="btn-primary">
           <Plus size={18} /> Novo Produto
@@ -165,16 +170,16 @@ export default function Products() {
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
             <input
-              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
               placeholder="Buscar produtos..."
               className="input pl-10"
             />
           </div>
-          <select value={category} onChange={e => setCategory(e.target.value)} className="input sm:w-44">
+          <select value={category} onChange={e => { setCategory(e.target.value); setPage(1); }} className="input sm:w-44">
             <option value="">Todas as categorias</option>
             {categories.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
           </select>
-          <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="input sm:w-36">
+          <select value={brandFilter} onChange={e => { setBrandFilter(e.target.value); setPage(1); }} className="input sm:w-36">
             <option value="">Todas as marcas</option>
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
@@ -200,11 +205,11 @@ export default function Products() {
                   <div
                     key={p.id}
                     className="rounded-xl p-3 flex gap-3"
-                    style={{ background: 'rgba(212,80,159,0.04)', border: '1px solid var(--card-border)' }}
+                    style={{ background: 'rgba(196,154,108,0.04)', border: '1px solid var(--card-border)' }}
                   >
                     <div
                       className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0"
-                      style={{ background: 'rgba(212,80,159,0.08)' }}
+                      style={{ background: 'rgba(196,154,108,0.08)' }}
                     >
                       {p.image_url ? (
                         <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
@@ -245,7 +250,7 @@ export default function Products() {
                             onClick={() => openEdit(p)}
                             className="p-1.5 rounded-lg transition-colors cursor-pointer"
                             style={{ color: 'var(--text-muted)' }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4509F'; (e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.1)'; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#C49A6C'; (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.1)'; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                           >
                             <Pencil size={14} />
@@ -287,7 +292,7 @@ export default function Products() {
                       <tr key={p.id} className="transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                         <td className="py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ background: 'rgba(212,80,159,0.08)' }}>
+                            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ background: 'rgba(196,154,108,0.08)' }}>
                               {p.image_url ? (
                                 <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
                               ) : (
@@ -362,6 +367,37 @@ export default function Products() {
               </table>
             </div>
           </>
+        )}
+        {pagination && pagination.pages > 1 && (
+          <div className="flex items-center justify-between mt-5 pt-4 border-t" style={{ borderColor: 'var(--card-border)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              Página {page} de {pagination.pages}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+              >← Anterior</button>
+              {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(n => (
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
+                  className="w-8 h-8 text-sm rounded-lg border transition-colors"
+                  style={page === n
+                    ? { background: '#C49A6C', color: '#fff', borderColor: '#C49A6C' }
+                    : { borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+                >{n}</button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                disabled={page === pagination.pages}
+                className="px-3 py-1.5 text-sm rounded-lg border transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ borderColor: 'var(--card-border)', color: 'var(--text-primary)' }}
+              >Próxima →</button>
+            </div>
+          </div>
         )}
       </div>
 

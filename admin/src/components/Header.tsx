@@ -1,4 +1,4 @@
-import { LogOut, Bell, Sun, Moon, Sparkles } from 'lucide-react';
+import { LogOut, Bell, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -32,21 +32,30 @@ export default function Header() {
         borderBottom: '1px solid var(--header-border)',
       }}
     >
-      {/* Left: Brand mark (mobile) + page title */}
+      {/* Left: brand mark (mobile) + page title */}
       <div className="flex items-center gap-3">
-        {/* Small brand icon visible only on mobile (sidebar hidden) */}
         <div
-          className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shadow-glow-rose flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
+          className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #C49A6C, #A07845)',
+            boxShadow: '0 2px 10px rgba(196,154,108,0.35)',
+          }}
         >
-          <Sparkles size={14} className="text-white" />
+          <span
+            className="font-bold text-sm leading-none"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: '#0A0908' }}
+          >
+            A
+          </span>
         </div>
         <div>
-          <h1 className="text-sm sm:text-base font-semibold leading-none" style={{ color: 'var(--text-primary)' }}>
+          <h1 className="text-sm sm:text-base font-semibold leading-none"
+            style={{ color: 'var(--text-primary)' }}>
             {title}
           </h1>
-          <p className="text-[11px] hidden sm:block mt-0.5" style={{ color: 'var(--text-muted)' }}>
-            Beauty Store Admin
+          <p className="text-[11px] hidden sm:block mt-0.5"
+            style={{ color: 'var(--text-muted)' }}>
+            Painel Admin
           </p>
         </div>
       </div>
@@ -61,9 +70,9 @@ export default function Header() {
           className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
           style={{ color: 'var(--text-muted)', border: '1px solid var(--card-border)' }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.1)';
-            (e.currentTarget as HTMLElement).style.color = '#D4509F';
-            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,80,159,0.35)';
+            (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.10)';
+            (e.currentTarget as HTMLElement).style.color = '#C49A6C';
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(196,154,108,0.35)';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -78,7 +87,7 @@ export default function Header() {
         <button
           className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
           style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.1)')}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.10)')}
           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
         >
           <Bell size={16} />
@@ -99,8 +108,12 @@ export default function Header() {
           </div>
 
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-glow-rose"
-            style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}
+            className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm"
+            style={{
+              background: 'linear-gradient(135deg, #C49A6C, #A07845)',
+              color: '#1A0A10',
+              boxShadow: '0 2px 8px rgba(196,154,108,0.30)',
+            }}
           >
             {user?.email.charAt(0).toUpperCase()}
           </div>
@@ -111,7 +124,7 @@ export default function Header() {
             className="p-2 rounded-xl transition-all duration-200 cursor-pointer"
             style={{ color: 'var(--text-muted)' }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.1)';
+              (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.10)';
               (e.currentTarget as HTMLElement).style.color = '#F87171';
             }}
             onMouseLeave={e => {

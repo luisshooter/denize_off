@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,70 +6,59 @@
 
 /* ── CSS Variables ─────────────────────────────────── */
 :root {
-  --page-bg:     #F7F4FC;
-  --card-bg:     #ffffff;
-  --card-border: rgba(212, 80, 159, 0.11);
-  --text-primary: #1E1B2E;
-  --text-muted:   #7C6D8A;
-  --input-bg:    #ffffff;
-  --input-border: rgba(212, 80, 159, 0.2);
-  --sidebar-bg:  #1A1728;
-  --header-bg:   rgba(255,255,255,0.92);
-  --header-border: rgba(212, 80, 159, 0.09);
-  --glass-bg:    rgba(255,255,255,0.7);
-  --glass-border: rgba(212,80,159,0.18);
+  --page-bg:       #FAF6F1;
+  --card-bg:       #ffffff;
+  --card-border:   rgba(61, 18, 37, 0.08);
+  --text-primary:  #1A0A10;
+  --text-muted:    #8C7378;
+  --input-bg:      #ffffff;
+  --input-border:  rgba(61, 18, 37, 0.15);
+  --sidebar-bg:    #0A0908;
+  --header-bg:     rgba(250,246,241,0.94);
+  --header-border: rgba(61, 18, 37, 0.07);
+  --glass-bg:      rgba(255,255,255,0.72);
+  --glass-border:  rgba(196,154,108,0.18);
 }
 
 .dark {
-  --page-bg:     #09070F;
-  --card-bg:     #160F28;
-  --card-border: rgba(212, 80, 159, 0.16);
-  --text-primary: #EDE8F8;
-  --text-muted:   #9B8FBF;
-  --input-bg:    #100B20;
-  --input-border: rgba(212, 80, 159, 0.22);
-  --sidebar-bg:  #0D0A18;
-  --header-bg:   rgba(22,15,40,0.95);
-  --header-border: rgba(212, 80, 159, 0.12);
-  --glass-bg:    rgba(22,15,40,0.65);
-  --glass-border: rgba(212,80,159,0.22);
+  --page-bg:       #0C0A09;
+  --card-bg:       #18110D;
+  --card-border:   rgba(196, 154, 108, 0.13);
+  --text-primary:  #EDE8E0;
+  --text-muted:    #9B8F85;
+  --input-bg:      #120E0A;
+  --input-border:  rgba(196, 154, 108, 0.20);
+  --sidebar-bg:    #070605;
+  --header-bg:     rgba(18,14,10,0.96);
+  --header-border: rgba(196, 154, 108, 0.10);
+  --glass-bg:      rgba(18,14,10,0.65);
+  --glass-border:  rgba(196,154,108,0.20);
 }
 
 /* ── Base ──────────────────────────────────────────── */
 @layer base {
   * { box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--page-bg);
     color: var(--text-primary);
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
     @apply antialiased transition-colors duration-300;
   }
-
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(212,80,159,0.35);
+    background: rgba(196,154,108,0.35);
     border-radius: 9999px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(212,80,159,0.6);
-  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(196,154,108,0.60); }
 }
 
 /* ── Glow Card — borda interativa com o mouse ──────── */
-/*
-   CSS custom props --mouse-x / --mouse-y são definidas
-   pelo hook useMouseGlow via JS, apenas em (hover: hover).
-   O mask "exclui" o interior → gradiente visível só na borda.
-*/
 .glow-card {
   position: relative;
   border-radius: inherit;
 }
-
 .glow-card::after {
   content: '';
   position: absolute;
@@ -78,8 +67,8 @@
   padding: 1px;
   background: radial-gradient(
     380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
-    rgba(212, 80, 159, 0.6),
-    rgba(244, 208, 63, 0.15) 45%,
+    rgba(196, 154, 108, 0.55),
+    rgba(61, 18, 37, 0.10) 45%,
     transparent 70%
   );
   -webkit-mask:
@@ -92,12 +81,8 @@
   transition: opacity 0.35s ease;
   z-index: 1;
 }
-
-/* Só ativa em dispositivos com hover real (não touch) */
 @media (hover: hover) {
-  .glow-card:hover::after {
-    opacity: 1;
-  }
+  .glow-card:hover::after { opacity: 1; }
 }
 
 /* ── Components ────────────────────────────────────── */
@@ -109,13 +94,13 @@
            active:scale-[0.97] min-h-[44px]
            flex items-center justify-center gap-2
            disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
-    background: linear-gradient(135deg, #D4509F 0%, #A83380 100%);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(212,80,159,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    background: linear-gradient(135deg, #5C2040 0%, #3D1225 100%);
+    color: #FAF6F1;
+    box-shadow: 0 4px 16px rgba(61,18,37,0.28), inset 0 1px 0 rgba(255,255,255,0.10);
   }
   .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #E060AF 0%, #C04090 100%);
-    box-shadow: 0 8px 24px rgba(212,80,159,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, #7A2D58 0%, #5C2040 100%);
+    box-shadow: 0 8px 24px rgba(61,18,37,0.40), inset 0 1px 0 rgba(255,255,255,0.15);
     transform: translateY(-1px);
   }
 
@@ -128,9 +113,9 @@
     color: var(--text-primary);
   }
   .btn-secondary:hover {
-    border-color: rgba(212,80,159,0.35);
-    box-shadow: 0 4px 14px rgba(212,80,159,0.1);
-    background: rgba(212,80,159,0.03);
+    border-color: rgba(196,154,108,0.40);
+    box-shadow: 0 4px 14px rgba(196,154,108,0.10);
+    background: rgba(196,154,108,0.04);
   }
 
   .btn-danger {
@@ -149,33 +134,33 @@
     @apply rounded-2xl p-5 sm:p-6 transition-all duration-200;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    box-shadow: 0 1px 4px rgba(30,27,46,0.04), 0 4px 20px rgba(212,80,159,0.05);
+    box-shadow: 0 1px 4px rgba(61,18,37,0.04), 0 4px 20px rgba(61,18,37,0.04);
   }
   .card:hover {
-    box-shadow: 0 2px 8px rgba(30,27,46,0.06), 0 8px 32px rgba(212,80,159,0.1);
-    border-color: rgba(212,80,159,0.2);
+    box-shadow: 0 2px 8px rgba(61,18,37,0.05), 0 8px 32px rgba(196,154,108,0.09);
+    border-color: rgba(196,154,108,0.22);
   }
 
-  /* Glass card variant — para mobile WebView */
+  /* Glass card */
   .card-glass {
     @apply rounded-2xl p-5 sm:p-6 transition-all duration-200;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 4px 24px rgba(212,80,159,0.08);
+    box-shadow: 0 4px 24px rgba(61,18,37,0.06);
   }
 
-  /* Stat card colorido */
+  /* Stat card */
   .stat-card {
     @apply rounded-2xl p-4 sm:p-5 flex items-center gap-4 transition-all duration-200 cursor-default;
     border: 1px solid var(--card-border);
     background: var(--card-bg);
-    box-shadow: 0 2px 12px rgba(212,80,159,0.05);
+    box-shadow: 0 2px 12px rgba(61,18,37,0.04);
   }
   .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(212,80,159,0.12);
+    box-shadow: 0 8px 28px rgba(196,154,108,0.12);
   }
 
   /* Input */
@@ -185,12 +170,12 @@
     background: var(--input-bg);
     border: 1px solid var(--input-border);
     color: var(--text-primary);
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Montserrat', system-ui, sans-serif;
   }
   .input::placeholder { color: var(--text-muted); opacity: 0.7; }
   .input:focus {
-    border-color: #D4509F;
-    box-shadow: 0 0 0 3px rgba(212,80,159,0.13);
+    border-color: #C49A6C;
+    box-shadow: 0 0 0 3px rgba(196,154,108,0.13);
   }
 
   /* Badge */
@@ -198,9 +183,9 @@
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
   }
 
-  /* Gradiente de texto beauty */
+  /* Gradient texto brand */
   .text-gradient {
-    background: linear-gradient(135deg, #D4509F, #A83380);
+    background: linear-gradient(135deg, #C49A6C, #A07845);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -213,24 +198,21 @@
   }
 
   /* Heading display font */
-  .font-display { font-family: 'Playfair Display', Georgia, serif; }
+  .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
 }
 
 /* ── Animações utilitárias ─────────────────────────── */
-
-/* Shimmer de loading */
 .shimmer {
   background: linear-gradient(
     90deg,
     var(--card-bg) 25%,
-    rgba(212, 80, 159, 0.08) 50%,
+    rgba(196, 154, 108, 0.08) 50%,
     var(--card-bg) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.8s linear infinite;
 }
 
-/* Reduz animações se o usuário preferir */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -238,25 +220,17 @@
   }
 }
 
-/* Performance: desativa float em mobile */
 @media (max-width: 768px) {
-  .animate-float, .animate-float-delayed {
-    animation: none !important;
-  }
+  .animate-float, .animate-float-delayed { animation: none !important; }
 }
 
-/* ── Shimmer animation keyframe ────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
 }
 
-/* ── Mobile: disable glow-card on touch devices ────── */
-@media (hover: none) {
-  .glow-card::after { display: none; }
-}
+@media (hover: none) { .glow-card::after { display: none; } }
 
-/* ── Safe area insets for iOS WebView ─────────────── */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 }

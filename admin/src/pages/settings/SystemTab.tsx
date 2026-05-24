@@ -34,7 +34,7 @@ export default function SystemTab() {
       <div className="card space-y-4">
         <div className="flex items-center gap-3 mb-1">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-               style={{ background: 'rgba(212,80,159,0.12)' }}>
+               style={{ background: 'rgba(196,154,108,0.12)' }}>
             <DatabaseZap size={20} className="text-brand-rose" />
           </div>
           <div>
@@ -89,7 +89,7 @@ export default function SystemTab() {
           </button>
         ) : (
           <div className="space-y-3 rounded-xl p-4"
-               style={{ border: '1px solid rgba(212,80,159,0.25)', background: 'rgba(212,80,159,0.06)' }}>
+               style={{ border: '1px solid rgba(196,154,108,0.25)', background: 'rgba(196,154,108,0.06)' }}>
             <div className="flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
               <ShieldCheck size={16} className="text-brand-rose" />
               Confirme sua senha para continuar
@@ -141,7 +141,7 @@ export default function SystemTab() {
         <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           Execute esta operação após instalar uma nova versão do sistema que adiciona funcionalidades ao banco de dados.
           Ela é equivalente ao comando{' '}
-          <code className="px-1 rounded font-mono text-brand-rose" style={{ background: 'rgba(212,80,159,0.1)' }}>
+          <code className="px-1 rounded font-mono text-brand-rose" style={{ background: 'rgba(196,154,108,0.1)' }}>
             npm run migrate
           </code>
           {' '}no servidor, mas pode ser feita diretamente pelo painel sem acesso ao terminal.

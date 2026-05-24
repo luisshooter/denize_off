@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Mail, Lock, Eye, EyeOff, Flower2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -31,15 +31,15 @@ export default function Login() {
 
       {/* ── Painel esquerdo — branding ─────────────────── */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center"
-           style={{ background: 'linear-gradient(145deg, #110E1C 0%, #1E1B2E 60%, #2A1040 100%)' }}>
+           style={{ background: 'linear-gradient(145deg, #0A0908 0%, #1A1714 60%, #221810 100%)' }}>
 
-        {/* Orbs decorativos — CSS only, sem JS */}
+        {/* Orbs decorativos */}
         <div className="orb w-80 h-80 top-[-60px] left-[-60px] animate-glow-pulse"
-             style={{ background: 'radial-gradient(circle, rgba(212,80,159,0.35), transparent 70%)' }} />
+             style={{ background: 'radial-gradient(circle, rgba(196,154,108,0.22), transparent 70%)' }} />
         <div className="orb w-64 h-64 bottom-[-40px] right-[-40px] animate-float-delayed"
-             style={{ background: 'radial-gradient(circle, rgba(168,51,128,0.25), transparent 70%)' }} />
+             style={{ background: 'radial-gradient(circle, rgba(61,18,37,0.40), transparent 70%)' }} />
         <div className="orb w-48 h-48 top-1/2 right-1/4 animate-float"
-             style={{ background: 'radial-gradient(circle, rgba(244,208,63,0.15), transparent 70%)' }} />
+             style={{ background: 'radial-gradient(circle, rgba(160,120,69,0.15), transparent 70%)' }} />
 
         {/* Partículas decorativas */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -51,22 +51,34 @@ export default function Login() {
             { top: '45%', left: '50%', size: 3, delay: '1.5s' },
           ].map((p, i) => (
             <div key={i}
-                 className="absolute rounded-full bg-brand-rose/40 animate-glow-pulse"
-                 style={{ top: p.top, left: p.left, width: p.size, height: p.size, animationDelay: p.delay }} />
+                 className="absolute rounded-full animate-glow-pulse"
+                 style={{ top: p.top, left: p.left, width: p.size, height: p.size,
+                          background: 'rgba(196,154,108,0.50)', animationDelay: p.delay }} />
           ))}
         </div>
 
         {/* Conteúdo central */}
         <div className="relative z-10 text-center px-12 max-w-sm animate-fade-in">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-glow-rose"
-               style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}>
-            <Sparkles size={34} className="text-white" />
+          <div
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, #C49A6C, #A07845)',
+              boxShadow: '0 4px 24px rgba(196,154,108,0.40)',
+            }}
+          >
+            <span
+              className="font-bold"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '2.5rem', color: '#1A0A10', lineHeight: 1 }}
+            >
+              A
+            </span>
           </div>
 
-          <h1 className="font-display text-4xl font-bold text-white mb-3 leading-tight">
-            Beauty Store
+          <h1 className="font-display text-4xl font-bold text-white mb-3 leading-tight"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", letterSpacing: '0.02em' }}>
+            Painel Admin
           </h1>
-          <p className="text-white/50 text-base leading-relaxed mb-10">
+          <p className="text-base leading-relaxed mb-10" style={{ color: 'rgba(232,213,183,0.55)' }}>
             Gerencie sua loja com elegância e praticidade.
           </p>
 
@@ -77,19 +89,23 @@ export default function Login() {
               { title: 'Dados',    sub: 'Tempo real' },
             ].map(({ title, sub }) => (
               <div key={title}
-                   className="rounded-xl p-3 text-center transition-all duration-300 hover:bg-white/10"
-                   style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <p className="text-white font-semibold text-sm">{title}</p>
-                <p className="text-white/40 text-xs mt-0.5">{sub}</p>
+                   className="rounded-xl p-3 text-center transition-all duration-300"
+                   style={{ background: 'rgba(196,154,108,0.06)', border: '1px solid rgba(196,154,108,0.13)' }}
+                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.12)'}
+                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.06)'}
+              >
+                <p className="font-semibold text-sm" style={{ color: '#E8D5B7' }}>{title}</p>
+                <p className="text-xs mt-0.5" style={{ color: 'rgba(196,154,108,0.50)' }}>{sub}</p>
               </div>
             ))}
           </div>
 
-          {/* Badge beauty */}
           <div className="mt-10 inline-flex items-center gap-2 px-4 py-2 rounded-full"
-               style={{ background: 'rgba(212,80,159,0.15)', border: '1px solid rgba(212,80,159,0.3)' }}>
-            <Flower2 size={14} className="text-brand-rose" />
-            <span className="text-brand-rose-light text-xs font-medium">Painel Administrativo</span>
+               style={{ background: 'rgba(196,154,108,0.10)', border: '1px solid rgba(196,154,108,0.25)' }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#C49A6C' }} />
+            <span className="text-xs font-medium" style={{ color: 'rgba(232,213,183,0.70)' }}>
+              Acesso Administrativo
+            </span>
           </div>
         </div>
       </div>
@@ -101,12 +117,19 @@ export default function Login() {
 
           {/* Logo mobile */}
           <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-rose"
-                 style={{ background: 'linear-gradient(135deg, #D4509F, #A83380)' }}>
-              <Sparkles size={20} className="text-white" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                 style={{
+                   background: 'linear-gradient(135deg, #C49A6C, #A07845)',
+                   boxShadow: '0 2px 12px rgba(196,154,108,0.35)',
+                 }}>
+              <span className="font-bold text-base leading-none"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", color: '#1A0A10' }}>
+                A
+              </span>
             </div>
-            <span className="font-display font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
-              Beauty Store
+            <span className="font-display font-bold text-xl"
+              style={{ color: 'var(--text-primary)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+              Painel Admin
             </span>
           </div>
 
@@ -143,7 +166,7 @@ export default function Login() {
                   Email
                 </label>
                 <div className="relative">
-                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-rose/60" />
+                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-copper/60" />
                   <input
                     type="email"
                     value={email}
@@ -162,7 +185,7 @@ export default function Login() {
                   Senha
                 </label>
                 <div className="relative">
-                  <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-rose/60" />
+                  <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-copper/60" />
                   <input
                     type={showPw ? 'text' : 'password'}
                     value={password}

@@ -53,8 +53,8 @@ export default function Dashboard() {
       label: 'Total de Pedidos',
       value: String(stats.totalOrders),
       icon: ShoppingBag,
-      gradient: 'linear-gradient(135deg, #D4509F, #A83380)',
-      glow: 'rgba(212,80,159,0.25)',
+      gradient: 'linear-gradient(135deg, #C49A6C, #A07845)',
+      glow: 'rgba(196,154,108,0.25)',
       link: '/pedidos',
     },
     {
@@ -138,7 +138,7 @@ export default function Dashboard() {
           <Link
             to="/pedidos"
             className="flex items-center gap-1 text-xs font-semibold transition-colors"
-            style={{ color: '#D4509F' }}
+            style={{ color: '#C49A6C' }}
           >
             Ver todos <ArrowRight size={12} />
           </Link>
@@ -168,7 +168,7 @@ export default function Dashboard() {
                         key={order.id}
                         className="transition-colors duration-150 cursor-default"
                         style={{ borderBottom: '1px solid var(--card-border)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(212,80,159,0.03)')}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(196,154,108,0.03)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                       >
                         <td className="py-3 font-medium" style={{ color: 'var(--text-primary)' }}>
@@ -201,7 +201,7 @@ export default function Dashboard() {
                   <div
                     key={order.id}
                     className="flex items-center justify-between gap-3 p-3 rounded-xl"
-                    style={{ background: 'rgba(212,80,159,0.03)', border: '1px solid var(--card-border)' }}
+                    style={{ background: 'rgba(196,154,108,0.03)', border: '1px solid var(--card-border)' }}
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-sm truncate" style={{ color: 'var(--text-primary)' }}>

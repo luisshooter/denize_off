@@ -15,9 +15,9 @@ export default function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
       style={{
         background: 'var(--sidebar-bg)',
-        borderTop: '1px solid rgba(212,80,159,0.13)',
+        borderTop: '1px solid rgba(196,154,108,0.12)',
         paddingBottom: 'env(safe-area-inset-bottom)',
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.25)',
+        boxShadow: '0 -4px 24px rgba(0,0,0,0.30)',
       }}
     >
       <div className="flex">
@@ -36,22 +36,22 @@ export default function BottomNav() {
                     width: 44,
                     height: 32,
                     background: isActive
-                      ? 'linear-gradient(135deg, rgba(212,80,159,0.25), rgba(168,51,128,0.18))'
+                      ? 'linear-gradient(135deg, rgba(196,154,108,0.22), rgba(160,120,69,0.15))'
                       : 'transparent',
-                    boxShadow: isActive ? '0 2px 8px rgba(212,80,159,0.2)' : 'none',
+                    boxShadow: isActive ? '0 2px 8px rgba(196,154,108,0.20)' : 'none',
                   }}
                 >
                   <Icon
                     size={21}
                     style={{
-                      color: isActive ? '#D4509F' : 'rgba(255,255,255,0.35)',
+                      color: isActive ? '#C49A6C' : 'rgba(255,255,255,0.30)',
                       transition: 'color 0.2s',
                     }}
                   />
                 </div>
                 <span
                   className="text-[10px] font-semibold tracking-wide transition-colors duration-200"
-                  style={{ color: isActive ? '#D4509F' : 'rgba(255,255,255,0.3)' }}
+                  style={{ color: isActive ? '#C49A6C' : 'rgba(255,255,255,0.28)' }}
                 >
                   {label}
                 </span>

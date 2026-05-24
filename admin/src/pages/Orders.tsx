@@ -92,7 +92,7 @@ export default function Orders() {
                 active && s
                   ? { background: s.bg, color: s.color, border: `1px solid ${s.color}40` }
                   : active
-                  ? { background: 'linear-gradient(135deg,#D4509F,#A83380)', color: '#fff', border: '1px solid transparent' }
+                  ? { background: 'linear-gradient(135deg,#C49A6C,#A07845)', color: '#fff', border: '1px solid transparent' }
                   : { background: 'var(--card-bg)', color: 'var(--text-muted)', border: '1px solid var(--card-border)' }
               }
             >
@@ -128,7 +128,7 @@ export default function Orders() {
                 className="flex flex-wrap items-center justify-between gap-3 p-4 cursor-pointer transition-colors duration-150"
                 style={{ borderBottom: isOpen ? '1px solid var(--card-border)' : 'none' }}
                 onClick={() => setExpanded(isOpen ? null : order.id)}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.04)')}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.04)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
               >
                 <div className="flex items-center gap-3 min-w-0">
@@ -167,7 +167,7 @@ export default function Orders() {
               {isOpen && (
                 <div
                   className="p-4 space-y-4"
-                  style={{ background: 'rgba(212,80,159,0.025)' }}
+                  style={{ background: 'rgba(196,154,108,0.025)' }}
                 >
                   {/* Items */}
                   <div>

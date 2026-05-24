@@ -44,17 +44,17 @@ function TagChip({ tag, desc, onInsert }: { tag: string; desc: string; onInsert:
       onClick={() => onInsert(tag)}
       className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono transition-colors"
       style={{
-        background: 'rgba(212,80,159,0.12)',
-        color: '#D4509F',
-        border: '1px solid rgba(212,80,159,0.25)',
+        background: 'rgba(196,154,108,0.12)',
+        color: '#C49A6C',
+        border: '1px solid rgba(196,154,108,0.25)',
       }}
       onMouseEnter={e => {
-        (e.currentTarget as HTMLElement).style.background = '#D4509F';
+        (e.currentTarget as HTMLElement).style.background = '#C49A6C';
         (e.currentTarget as HTMLElement).style.color = '#fff';
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.background = 'rgba(212,80,159,0.12)';
-        (e.currentTarget as HTMLElement).style.color = '#D4509F';
+        (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.12)';
+        (e.currentTarget as HTMLElement).style.color = '#C49A6C';
       }}
     >
       {tag}
@@ -106,7 +106,7 @@ export default function WhatsappTab({ initial }: Props) {
   };
 
   const previewStyle: React.CSSProperties = {
-    background: 'rgba(212,80,159,0.05)',
+    background: 'rgba(196,154,108,0.05)',
     border: '1px solid var(--card-border)',
     borderRadius: '0.75rem',
     padding: '0.75rem',
@@ -197,7 +197,7 @@ export default function WhatsappTab({ initial }: Props) {
           <h3 className="font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Template — Múltiplos Produtos</h3>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Usado quando o carrinho tem 2 ou mais produtos. A tag{' '}
-            <code className="px-1 rounded font-mono text-brand-rose" style={{ background: 'rgba(212,80,159,0.1)' }}>{'{lista}'}</code>
+            <code className="px-1 rounded font-mono text-brand-rose" style={{ background: 'rgba(196,154,108,0.1)' }}>{'{lista}'}</code>
             {' '}expande cada item automaticamente.
           </p>
         </div>

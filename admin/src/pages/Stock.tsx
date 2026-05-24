@@ -38,7 +38,7 @@ export default function Stock() {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/products?limit=200');
+      const { data } = await api.get('/products?limit=10000');
       setProducts(data.products);
       setPending({});
     } finally {
@@ -348,8 +348,8 @@ export default function Stock() {
                         className="flex items-center justify-center rounded-xl transition-all duration-150 active:scale-90 cursor-pointer"
                         style={{
                           minWidth: 36, minHeight: 36,
-                          background: 'rgba(212,80,159,0.07)',
-                          border: '1px solid rgba(212,80,159,0.18)',
+                          background: 'rgba(196,154,108,0.07)',
+                          border: '1px solid rgba(196,154,108,0.18)',
                           color: 'var(--text-muted)',
                         }}
                       >
@@ -374,8 +374,8 @@ export default function Stock() {
                         className="flex items-center justify-center rounded-xl transition-all duration-150 active:scale-90 cursor-pointer"
                         style={{
                           minWidth: 36, minHeight: 36,
-                          background: 'rgba(212,80,159,0.07)',
-                          border: '1px solid rgba(212,80,159,0.18)',
+                          background: 'rgba(196,154,108,0.07)',
+                          border: '1px solid rgba(196,154,108,0.18)',
                           color: 'var(--text-muted)',
                         }}
                       >

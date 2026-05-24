@@ -95,7 +95,7 @@ export default function Settings() {
             onClick={() => setActiveTab(tab.id)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200"
             style={activeTab === tab.id
-              ? { background: 'var(--card-bg)', color: '#D4509F', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }
+              ? { background: 'var(--card-bg)', color: '#C49A6C', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }
               : { color: 'var(--text-muted)' }
             }
           >

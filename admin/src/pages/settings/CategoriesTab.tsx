@@ -98,7 +98,7 @@ export default function CategoriesTab({ initial }: Props) {
             <span
               key={cat}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all"
-              style={{ background: 'rgba(212,80,159,0.12)', color: '#D4509F', border: '1px solid rgba(212,80,159,0.25)' }}
+              style={{ background: 'rgba(196,154,108,0.12)', color: '#C49A6C', border: '1px solid rgba(196,154,108,0.25)' }}
             >
               {cat}
               <button
@@ -145,7 +145,7 @@ export default function CategoriesTab({ initial }: Props) {
             onClick={restore}
             className="flex items-center gap-1.5 text-sm transition-colors"
             style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#D4509F')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#C49A6C')}
             onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
             <RotateCcw size={13} />

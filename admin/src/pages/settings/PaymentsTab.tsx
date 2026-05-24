@@ -150,7 +150,7 @@ export default function PaymentsTab({ initial }: Props) {
 
         {adding && (
           <div className="rounded-xl p-4 space-y-3"
-               style={{ border: '1px solid rgba(212,80,159,0.3)', background: 'rgba(212,80,159,0.06)' }}>
+               style={{ border: '1px solid rgba(196,154,108,0.3)', background: 'rgba(196,154,108,0.06)' }}>
             <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Nova forma de pagamento</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
