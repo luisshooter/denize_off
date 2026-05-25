@@ -9,6 +9,7 @@ node_modules/
 backend/.env
 admin/.env.local
 store/.env.local
+store/.env.production
 
 # Build
 dist/
