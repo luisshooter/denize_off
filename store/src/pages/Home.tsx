@@ -62,23 +62,20 @@ export default function Home() {
   useEffect(() => {
     if (!featured.length || !gridRef.current) return;
     const cards = Array.from(gridRef.current.querySelectorAll<HTMLElement>('.card-reveal'));
-    if (!window.IntersectionObserver) {
-      cards.forEach(c => c.classList.add('in-view'));
-      return;
-    }
+    if (!cards.length) return;
+    const reveal = (el: HTMLElement) => el.classList.add('in-view');
+    const fallback = setTimeout(() => cards.forEach(reveal), 800);
+    if (!window.IntersectionObserver) { cards.forEach(reveal); clearTimeout(fallback); return; }
     const obs = new IntersectionObserver(
       entries => {
         entries.forEach(({ target, isIntersecting }) => {
-          if (isIntersecting) {
-            (target as HTMLElement).classList.add('in-view');
-            obs.unobserve(target);
-          }
+          if (isIntersecting) { reveal(target as HTMLElement); obs.unobserve(target); }
         });
       },
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.01, rootMargin: '0px 0px 60px 0px' }
     );
     cards.forEach(c => obs.observe(c));
-    return () => obs.disconnect();
+    return () => { obs.disconnect(); clearTimeout(fallback); };
   }, [featured]);
 
   return (

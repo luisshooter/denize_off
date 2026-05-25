@@ -79,15 +79,18 @@ export default function MasculinoProducts() {
 
   /* scroll reveal */
   useEffect(() => {
-    if (!gridRef.current) return;
-    const cards = gridRef.current.querySelectorAll<HTMLElement>('.card-reveal');
+    if (!gridRef.current || !products.length) return;
+    const cards = Array.from(gridRef.current.querySelectorAll<HTMLElement>('.card-reveal'));
     if (!cards.length) return;
+    const reveal = (el: HTMLElement) => el.classList.add('in-view');
+    const fallback = setTimeout(() => cards.forEach(reveal), 800);
+    if (!window.IntersectionObserver) { cards.forEach(reveal); clearTimeout(fallback); return; }
     const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('in-view'); observer.unobserve(e.target); } }),
-      { threshold: 0.08 }
+      entries => entries.forEach(e => { if (e.isIntersecting) { reveal(e.target as HTMLElement); observer.unobserve(e.target); } }),
+      { threshold: 0.01, rootMargin: '0px 0px 60px 0px' }
     );
     cards.forEach(c => observer.observe(c));
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); clearTimeout(fallback); };
   }, [products]);
 
   const set = (k: string, v: string) => {
