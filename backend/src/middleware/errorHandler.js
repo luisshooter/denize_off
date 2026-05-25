@@ -1,7 +1,8 @@
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) return next(err);
 
-  console.error('[Error]', err.message, err.stack?.split('\n')[1]);
+  console.log('[Error]', err.message, err.code, err.stack?.split('\n')[1]);
+  console.error('[Error]', err.message, err.code, err.stack?.split('\n')[1]);
 
   if (err.message?.includes('CORS')) return res.status(403).json({ error: err.message });
   if (err.code === '23505') return res.status(409).json({ error: 'Registro já existe' });
