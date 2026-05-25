@@ -53,6 +53,7 @@ exports.login = async (req, res, next) => {
       user: { id: user.id, email: user.email, role: user.role }
     });
   } catch (err) {
+    console.log('[LOGIN_ERROR]', err.message, err.code, err.detail);
     next(err);
   }
 };
