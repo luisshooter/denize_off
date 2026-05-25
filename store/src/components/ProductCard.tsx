@@ -197,10 +197,10 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
             </div>
           )}
 
-          <div className="flex gap-1.5 pt-1">
+          <div className="flex gap-2 pt-1">
             <button
               onClick={handleCallNow}
-              className="btn-whatsapp flex-1 text-xs font-semibold py-2.5 min-h-[44px] rounded-full active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer"
+              className="btn-whatsapp flex-1 text-xs font-semibold px-2 py-2.5 min-h-[44px] rounded-full shadow-none active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <MessageCircle size={13} />
               Chamar
@@ -208,11 +208,11 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
             <button
               onClick={handleAddCart}
               disabled={product.stock === 0}
-              className="btn-masc-cart flex-1 text-xs font-semibold py-2.5 min-h-[44px] rounded-full active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="btn-masc-cart w-11 h-11 min-w-[44px] flex-shrink-0 rounded-full active:scale-[0.98] select-none flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: 'linear-gradient(135deg, #C49A6C, #A07845)', color: '#0F0E0D' }}
+              aria-label="Adicionar ao carrinho"
             >
-              <ShoppingBag size={13} />
-              Carrinho
+              <ShoppingBag size={16} />
             </button>
           </div>
         </div>
