@@ -316,10 +316,10 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
         )}
 
         {/* Mobile buttons — visíveis direto no card (sem hover) */}
-        <div className="flex gap-1.5 pt-1 sm:hidden">
+        <div className="flex gap-2 pt-1 sm:hidden">
           <button
             onClick={handleCallNow}
-            className="flex-1 bg-[#25D366] text-white text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
+            className="flex-1 bg-[#25D366] text-white text-xs font-semibold px-2 py-2.5 min-h-[44px] rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
           >
             <MessageCircle size={13} />
             Chamar
@@ -327,11 +327,11 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           <button
             onClick={handleAddCart}
             disabled={product.stock === 0}
-            className="flex-1 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold py-2.5 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
+            className="w-11 h-11 min-w-[44px] flex-shrink-0 rounded-full flex items-center justify-center active:scale-[0.97] select-none cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: 'linear-gradient(135deg, #5C2040, #3D1225)', color: '#FAF6F1' }}
+            aria-label="Adicionar ao carrinho"
           >
-            <ShoppingBag size={13} />
-            Carrinho
+            <ShoppingBag size={16} />
           </button>
         </div>
       </div>
