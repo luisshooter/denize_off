@@ -125,7 +125,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
 
   if (isMasc) {
     return (
-      <div className="masc-card group" onClick={() => navigate(`/produto/${product.id}`)}>
+      <div className="masc-card group" onClick={() => navigate(`/produto/${product.id}`)} style={{ WebkitTapHighlightColor: 'transparent' }}>
 
         {/* Image */}
         <div className="relative aspect-[4/5] overflow-hidden" style={{ background: 'linear-gradient(135deg, #292524, #1C1917)' }}>
@@ -222,7 +222,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
 
   /* ── Feminine card ── */
   return (
-    <div className="product-card group" onClick={() => navigate(`/produto/${product.id}`)}>
+    <div className="product-card group" onClick={() => navigate(`/produto/${product.id}`)} style={{ WebkitTapHighlightColor: 'transparent' }}>
 
       {/* Image */}
       <div className="relative aspect-[4/5] overflow-hidden" style={{ background: 'linear-gradient(135deg, #F5EFE9, #FAF6F1)' }}>

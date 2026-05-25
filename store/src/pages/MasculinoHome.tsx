@@ -268,6 +268,7 @@ export default function MasculinoHome() {
                 <div
                   key={p.id}
                   className="card-reveal"
+                  data-reveal={i % 2 === 0 ? 'left' : 'right'}
                   style={{ transitionDelay: `${i * 65}ms` }}
                 >
                   <ProductCard product={p} theme="masculino" />

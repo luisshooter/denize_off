@@ -228,7 +228,7 @@ export default function Products() {
       ) : (
         <div ref={gridRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((p, i) => (
-            <div key={p.id} className="card-reveal" style={{ transitionDelay: `${(i % 12) * 55}ms` }}>
+            <div key={p.id} className="card-reveal" data-reveal={i % 2 === 0 ? 'left' : 'right'} style={{ transitionDelay: `${(i % 12) * 55}ms` }}>
               <ProductCard product={p} />
             </div>
           ))}

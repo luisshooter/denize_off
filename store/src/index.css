@@ -10,15 +10,21 @@ html.cursor-hidden * {
 }
 
 @layer base {
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
   html { scroll-behavior: smooth; }
   body {
     background: #FAF6F1;
     color: #1A0A10;
     font-family: 'Montserrat', system-ui, sans-serif;
     overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     @apply antialiased;
   }
+  img, video { -webkit-touch-callout: none; user-select: none; }
+  button, a  { touch-action: manipulation; }
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(196,154,108,0.25); border-radius: 9999px; }
@@ -574,20 +580,37 @@ html.cursor-hidden * {
     .masc-gold-text,
     .masc-promo-headline,
     .masc-promo-badge { animation: none !important; }
-    .card-reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
+    .card-reveal { transition: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
     .cursor-dot, .cursor-ring { display: none !important; }
   }
 
   /* ── Scroll reveal ── */
   .card-reveal {
     opacity: 0;
-    transform: translateY(32px) scale(0.97);
-    transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(40px) scale(0.95);
+    filter: blur(3px);
+    transition:
+      opacity   0.6s  ease,
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      filter    0.5s  ease;
+    will-change: opacity, transform;
+    backface-visibility: hidden;
   }
+  .card-reveal[data-reveal="left"]  { transform: translateX(-32px) translateY(22px) scale(0.95); }
+  .card-reveal[data-reveal="right"] { transform: translateX(32px)  translateY(22px) scale(0.95); }
   .card-reveal.in-view {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
+    filter: blur(0);
   }
+
+  /* ── Card tap feedback (touch only) ── */
+  @media (pointer: coarse) {
+    .product-card:active { transform: scale(0.97); transition: transform 0.12s ease; }
+    .masc-card:active    { transform: scale(0.97); transition: transform 0.12s ease; }
+  }
+  .product-card { touch-action: manipulation; }
+  .masc-card    { touch-action: manipulation; }
 
   /* cursor — estilos inline injetados via vanilla JS no CursorEffect */
 

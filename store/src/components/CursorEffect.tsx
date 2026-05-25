@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 
 export default function CursorEffect() {
   useEffect(() => {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!fine) return;
+
     const dot  = document.createElement('div');
     const ring = document.createElement('div');
 
@@ -11,9 +14,7 @@ export default function CursorEffect() {
 
     document.body.appendChild(dot);
     document.body.appendChild(ring);
-
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (fine) document.documentElement.classList.add('cursor-hidden');
+    document.documentElement.classList.add('cursor-hidden');
 
     let x = -200, y = -200, rx = -200, ry = -200, raf: number;
 
