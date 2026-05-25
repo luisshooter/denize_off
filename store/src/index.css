@@ -11,10 +11,12 @@ html.cursor-hidden * {
 
 @layer base {
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     background: #FAF6F1;
     color: #1A0A10;
     font-family: 'Montserrat', system-ui, sans-serif;
+    overscroll-behavior: contain;
     @apply antialiased;
   }
   ::-webkit-scrollbar { width: 5px; }
@@ -439,6 +441,23 @@ html.cursor-hidden * {
            shadow-md hover:shadow-lg
            active:scale-[0.98] flex items-center justify-center gap-2 min-h-[48px]
            select-none cursor-pointer;
+  }
+
+  .btn-masc-cart { transition: all 200ms ease; }
+  .btn-masc-cart:hover:not(:disabled) {
+    background: linear-gradient(135deg, #D4B07C, #C49A6C) !important;
+  }
+
+  .btn-hero-primary { transition: transform 200ms ease, box-shadow 200ms ease; }
+  .btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(61,18,37,0.40) !important;
+  }
+
+  .btn-hero-promo { transition: background 200ms ease, border-color 200ms ease; }
+  .btn-hero-promo:hover {
+    background: rgba(196,154,108,0.12) !important;
+    border-color: rgba(196,154,108,0.75) !important;
   }
 
   /* ── Feminine product card ── */

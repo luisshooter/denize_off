@@ -200,10 +200,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           <div className="flex gap-1.5 pt-1">
             <button
               onClick={handleCallNow}
-              className="flex-1 text-xs font-semibold py-2.5 rounded-full transition-all active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer"
-              style={{ background: '#25D366', color: '#fff' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#20b956')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#25D366')}
+              className="btn-whatsapp flex-1 text-xs font-semibold py-2.5 min-h-[44px] rounded-full active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <MessageCircle size={13} />
               Chamar
@@ -211,10 +208,8 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
             <button
               onClick={handleAddCart}
               disabled={product.stock === 0}
-              className="flex-1 text-xs font-semibold py-2.5 rounded-full transition-all active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="btn-masc-cart flex-1 text-xs font-semibold py-2.5 min-h-[44px] rounded-full active:scale-[0.98] select-none flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: 'linear-gradient(135deg, #C49A6C, #A07845)', color: '#0F0E0D' }}
-              onMouseEnter={e => { if (!product.stock) return; (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #D4B07C, #C49A6C)'; }}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, #C49A6C, #A07845)'}
             >
               <ShoppingBag size={13} />
               Carrinho
@@ -253,10 +248,7 @@ export default function ProductCard({ product, theme = 'feminino' }: ProductCard
           >
             <button
               onClick={handleCallNow}
-              className="flex-1 text-white text-[11px] font-semibold py-2 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer transition-all"
-              style={{ background: '#25D366' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#20b956')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#25D366')}
+              className="btn-whatsapp flex-1 text-white text-[11px] font-semibold py-2 rounded-full flex items-center justify-center gap-1.5 active:scale-[0.97] select-none cursor-pointer"
             >
               <MessageCircle size={12} /> Chamar
             </button>

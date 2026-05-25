@@ -162,38 +162,22 @@ export default function Home() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/produtos?gender=feminino"
-                className="inline-flex items-center gap-2 font-semibold px-7 py-3.5 rounded-full text-sm transition-all select-none cursor-pointer"
+                className="btn-hero-primary inline-flex items-center gap-2 font-semibold px-7 py-3.5 rounded-full text-sm select-none cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #5C2040 0%, #3D1225 100%)',
                   color: '#FAF6F1',
                   boxShadow: '0 4px 20px rgba(61,18,37,0.28)',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 28px rgba(61,18,37,0.40)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.transform = '';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(61,18,37,0.28)';
                 }}
               >
                 Ver Coleção <ArrowRight size={16} />
               </Link>
               <Link
                 to="/produtos?promo=true&gender=feminino"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all select-none cursor-pointer"
+                className="btn-hero-promo inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold select-none cursor-pointer"
                 style={{
                   border: '1.5px solid rgba(196,154,108,0.45)',
                   color: '#A07845',
                   background: 'rgba(196,154,108,0.06)',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.12)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(196,154,108,0.75)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(196,154,108,0.06)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(196,154,108,0.45)';
                 }}
               >
                 <Heart size={14} />
