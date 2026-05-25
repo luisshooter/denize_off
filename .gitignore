@@ -8,6 +8,7 @@ node_modules/
 .env.*.local
 backend/.env
 admin/.env.local
+admin/.env.production
 store/.env.local
 store/.env.production
 

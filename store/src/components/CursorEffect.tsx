@@ -3,7 +3,8 @@ import { useEffect } from 'react';
 export default function CursorEffect() {
   useEffect(() => {
     const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (!fine) return;
+    const hasTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+    if (!fine || hasTouch) return;
 
     const dot  = document.createElement('div');
     const ring = document.createElement('div');
