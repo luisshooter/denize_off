@@ -57,6 +57,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT} [${process.env.NODE_ENV || 'development'}]`);
   console.log('[STARTUP] JWT_SECRET:', !!process.env.JWT_SECRET, '| JWT_REFRESH_SECRET:', !!process.env.JWT_REFRESH_SECRET);
+  console.log('[STARTUP] JWT vars in env:', Object.keys(process.env).filter(k => k.includes('JWT')));
 });
 
 module.exports = app;
