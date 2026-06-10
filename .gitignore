@@ -52,3 +52,8 @@ start-dev.bat
 stop-dev.bat
 # Added by code-review-graph
 .code-review-graph/
+
+# Database files ignored by user request
+/backend/database/schema.sql
+/backend/database/migrations/add_brand_payment_categories.sql
+
